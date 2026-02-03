@@ -11,6 +11,7 @@ import time
 from multiprocessing import Process, Event
 from typing import Optional
 from dataclasses import dataclass, field
+from datetime import datetime
 
 from compute.core.engine import PipelineEngine
 from compute.core.repository import PipelineRepository, PipelineMetadataRepository
@@ -27,6 +28,7 @@ class PipelineProcess:
     pipeline_name: str
     process: Optional[Process] = None
     stop_event: Event = field(default_factory=Event)
+    last_updated_at: datetime = field(default_factory=datetime.now)
     
     @property
     def is_alive(self) -> bool:
@@ -50,11 +52,16 @@ def _run_pipeline_process(pipeline_id: int, stop_event: Event) -> None:
     engine = None
     try:
         engine = PipelineEngine(pipeline_id)
-        engine.initialize()
+        # engine.initialize() # Moved inside run or handled by engine
+        # Verify engine initialization
         
         # Run until stop event is set
-        # Note: The Debezium engine.run() is blocking
-        # We'll need to implement proper shutdown handling
+        # We need to run the engine in a non-blocking way or handle stop signals
+        # Since Debezium engine blocks, we rely on the process termination for now
+        # OR if PipelineEngine supports a stop check.
+        # Assuming PipelineEngine.run() is blocking but we can stop it via terminate
+        
+        engine.initialize()
         engine.run()
         
     except Exception as e:
@@ -62,7 +69,10 @@ def _run_pipeline_process(pipeline_id: int, stop_event: Event) -> None:
         PipelineMetadataRepository.upsert(pipeline_id, "ERROR", str(e))
     finally:
         if engine:
-            engine.stop()
+            try:
+                engine.stop()
+            except:
+                pass
         close_connection_pool()
 
 
@@ -74,6 +84,11 @@ class PipelineManager:
     - Fault isolation (one pipeline crash doesn't affect others)
     - Better resource utilization
     - Independent memory management
+    
+    Real-time capabilities:
+    - Polls database for status changes (START/PAUSE)
+    - Detects configuration updates and restarts pipelines
+    - Handles pipeline deletions
     """
     
     def __init__(self):
@@ -91,19 +106,25 @@ class PipelineManager:
         self._logger.info(f"Received signal {signum}, initiating shutdown")
         self.shutdown()
     
-    def start_pipeline(self, pipeline_id: int) -> bool:
+    def start_pipeline(self, pipeline_id: int, updated_at: Optional[datetime] = None) -> bool:
         """
         Start a pipeline in a new process.
         
         Args:
             pipeline_id: Pipeline ID to start
+            updated_at: Timestamp of pipeline configuration
             
         Returns:
             True if started successfully
         """
-        if pipeline_id in self._processes and self._processes[pipeline_id].is_alive:
-            self._logger.warning(f"Pipeline {pipeline_id} is already running")
-            return False
+        if pipeline_id in self._processes:
+            proc_info = self._processes[pipeline_id]
+            if proc_info.is_alive:
+                self._logger.warning(f"Pipeline {pipeline_id} is already running")
+                return False
+            else:
+                # Cleanup dead process info before restarting
+                self._cleanup_process(pipeline_id)
         
         # Get pipeline info
         pipeline = PipelineRepository.get_by_id(pipeline_id)
@@ -125,6 +146,7 @@ class PipelineManager:
             pipeline_name=pipeline.name,
             process=proc,
             stop_event=stop_event,
+            last_updated_at=updated_at or datetime.now()
         )
         
         self._processes[pipeline_id] = pipeline_proc
@@ -133,8 +155,10 @@ class PipelineManager:
         proc.start()
         self._logger.info(f"Started pipeline {pipeline.name} (PID: {proc.pid})")
         
-        # Update pipeline status
-        PipelineRepository.update_status(pipeline_id, "START")
+        # Update pipeline status in DB to ensure it matches specific running state if needed
+        # But usually we trust the START status from DB.
+        # We might want to update metadata status to RUNNING
+        PipelineMetadataRepository.upsert(pipeline_id, "RUNNING")
         
         return True
     
@@ -150,15 +174,16 @@ class PipelineManager:
             True if stopped successfully
         """
         if pipeline_id not in self._processes:
-            self._logger.warning(f"Pipeline {pipeline_id} not tracked")
-            return False
+            return True
         
         pipeline_proc = self._processes[pipeline_id]
         
         if not pipeline_proc.is_alive:
             self._logger.info(f"Pipeline {pipeline_id} is not running")
-            del self._processes[pipeline_id]
+            self._cleanup_process(pipeline_id)
             return True
+        
+        self._logger.info(f"Stopping pipeline {pipeline_proc.pipeline_name}...")
         
         # Signal stop
         pipeline_proc.stop_event.set()
@@ -172,45 +197,33 @@ class PipelineManager:
             pipeline_proc.process.terminate()
             pipeline_proc.process.join(timeout=5.0)
         
-        # Update status
-        PipelineRepository.update_status(pipeline_id, "PAUSE")
-        PipelineMetadataRepository.upsert(pipeline_id, "PAUSED")
+        # Update metadata status
+        PipelineMetadataRepository.upsert(pipeline_id, "STOPPED")
         
-        del self._processes[pipeline_id]
+        self._cleanup_process(pipeline_id)
         self._logger.info(f"Stopped pipeline {pipeline_id}")
         
         return True
     
-    def restart_pipeline(self, pipeline_id: int) -> bool:
+    def _cleanup_process(self, pipeline_id: int) -> None:
+        """Remove pipeline from tracking."""
+        if pipeline_id in self._processes:
+            del self._processes[pipeline_id]
+
+    def restart_pipeline(self, pipeline_id: int, updated_at: Optional[datetime] = None) -> bool:
         """
         Restart a pipeline (stop if running, then start).
         
         Args:
             pipeline_id: Pipeline ID to restart
+            updated_at: New configuration timestamp
             
         Returns:
             True if restarted successfully
         """
         self.stop_pipeline(pipeline_id)
         time.sleep(1)  # Brief pause between stop and start
-        return self.start_pipeline(pipeline_id)
-    
-    def start_all_active(self) -> int:
-        """
-        Start all pipelines with START status.
-        
-        Returns:
-            Number of pipelines started
-        """
-        active_pipelines = PipelineRepository.get_active_pipelines()
-        started = 0
-        
-        for pipeline in active_pipelines:
-            if self.start_pipeline(pipeline.id):
-                started += 1
-        
-        self._logger.info(f"Started {started} active pipelines")
-        return started
+        return self.start_pipeline(pipeline_id, updated_at)
     
     def get_status(self) -> dict[int, dict]:
         """
@@ -225,26 +238,85 @@ class PipelineManager:
                 "pipeline_name": proc.pipeline_name,
                 "is_alive": proc.is_alive,
                 "pid": proc.process.pid if proc.process else None,
+                "last_updated_at": proc.last_updated_at.isoformat() if proc.last_updated_at else None
             }
         return status
     
-    def monitor(self, check_interval: float = 30.0) -> None:
+    def _sync_pipelines_state(self) -> None:
         """
-        Run monitoring loop to restart crashed pipelines.
+        Sync running pipelines with database state.
+        
+        Handles:
+        1. Starting new pipelines (START)
+        2. Stopping paused pipelines (PAUSE)
+        3. Restarting updated pipelines (updated_at changed)
+        4. Removing deleted pipelines
+        """
+        try:
+            # Get all pipelines from DB
+            db_pipelines = PipelineRepository.get_all()
+            db_pipeline_map = {p.id: p for p in db_pipelines}
+            
+            # Check for pipelines to STOP or DELETE
+            # Use list() to avoid runtime error during dictionary modification
+            for pipeline_id, proc in list(self._processes.items()):
+                # Case 1: Pipeline deleted from DB
+                if pipeline_id not in db_pipeline_map:
+                    self._logger.warning(f"Pipeline {proc.pipeline_name} (ID: {pipeline_id}) deleted from DB. Stopping...")
+                    self.stop_pipeline(pipeline_id)
+                    continue
+                
+                pipeline = db_pipeline_map[pipeline_id]
+                
+                # Case 2: Pipeline status changed to PAUSE
+                if pipeline.status == 'PAUSE':
+                    self._logger.info(f"Pipeline {pipeline.name} status is PAUSE. Stopping...")
+                    self.stop_pipeline(pipeline_id)
+                    continue
+                
+                # Case 3: Pipeline configuration updated
+                # We interpret 'REFRESH' as an immediate restart signal too
+                if pipeline.status == 'REFRESH':
+                    self._logger.info(f"Pipeline {pipeline.name} requested REFRESH. Restarting...")
+                    self.restart_pipeline(pipeline_id, pipeline.updated_at)
+                    # Reset status to START after refresh signal
+                    PipelineRepository.update_status(pipeline_id, 'START')
+                    continue
+                
+                # Check timestamps for config changes
+                # Ensure we handle timezone interactions carefully or assume naive/aware consistency
+                # Best to compare equality directly if both are same type
+                if pipeline.updated_at and proc.last_updated_at:
+                    if pipeline.updated_at > proc.last_updated_at:
+                        self._logger.info(
+                            f"Pipeline {pipeline.name} configuration updated ({pipeline.updated_at} > {proc.last_updated_at}). Restarting..."
+                        )
+                        self.restart_pipeline(pipeline_id, pipeline.updated_at)
+            
+            # Check for pipelines to START
+            for pipeline in db_pipelines:
+                if pipeline.status == 'START':
+                    if pipeline.id not in self._processes:
+                        self._logger.info(f"Found new pipeline to start: {pipeline.name}")
+                        self.start_pipeline(pipeline.id, pipeline.updated_at)
+                    elif not self._processes[pipeline.id].is_alive:
+                        self._logger.warning(f"Pipeline {pipeline.name} is START but process died. Restarting...")
+                        self.restart_pipeline(pipeline.id, pipeline.updated_at)
+
+        except Exception as e:
+            self._logger.error(f"Error syncing pipeline states: {e}", exc_info=True)
+
+    def monitor(self, check_interval: float = 5.0) -> None:
+        """
+        Run monitoring loop to manage pipeline lifecycle.
         
         Args:
             check_interval: Seconds between checks
         """
-        self._logger.info("Starting pipeline monitor")
+        self._logger.info(f"Starting pipeline monitor (interval: {check_interval}s)")
         
         while not self._shutdown_event.is_set():
-            # Check each pipeline
-            for pipeline_id, proc in list(self._processes.items()):
-                if not proc.is_alive:
-                    self._logger.warning(
-                        f"Pipeline {proc.pipeline_name} crashed, restarting"
-                    )
-                    self.start_pipeline(pipeline_id)
+            self._sync_pipelines_state()
             
             # Wait before next check
             self._shutdown_event.wait(check_interval)
@@ -262,19 +334,22 @@ class PipelineManager:
         self._shutdown_event.set()
         
         # Stop all pipelines
-        per_pipeline_timeout = timeout / max(len(self._processes), 1)
+        pk_list = list(self._processes.keys())
+        if not pk_list:
+            return 
+
+        per_pipeline_timeout = timeout / max(len(pk_list), 1)
         
-        for pipeline_id in list(self._processes.keys()):
+        for pipeline_id in pk_list:
             self.stop_pipeline(pipeline_id, timeout=per_pipeline_timeout)
         
         self._logger.info("Pipeline manager shutdown complete")
     
     def run(self) -> None:
         """
-        Main entry point: start all active pipelines and monitor.
+        Main entry point: start monitor loop.
         """
         try:
-            self.start_all_active()
             self.monitor()
         except KeyboardInterrupt:
             self._logger.info("Received keyboard interrupt")
@@ -284,17 +359,19 @@ class PipelineManager:
 
 def main():
     """Main entry point for running the pipeline manager."""
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    )
-    
-    # Initialize database
-    init_connection_pool()
-    
     try:
+        logging.basicConfig(
+            level=logging.INFO,
+            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        )
+        
+        # Initialize database
+        init_connection_pool()
+        
         manager = PipelineManager()
         manager.run()
+    except Exception as e:
+        print(f"Bailed out: {e}")
     finally:
         close_connection_pool()
 
