@@ -247,29 +247,39 @@ class PostgreSQLDestination(BaseDestination):
                 return bool(value) if value is not None else None
             
             elif pg_type in ('json', 'jsonb'):
-                # DuckDB JSON type can handle Python dicts/lists directly
-                # Keep as dict/list if already parsed, otherwise return string
+                # Convert to JSON string - PostgreSQL can implicitly convert JSON string to jsonb
+                import json
                 if isinstance(value, (dict, list)):
-                    return value
+                    return json.dumps(value)
                 elif isinstance(value, str):
-                    # Already a JSON string
-                    return value
+                    # Already a JSON string - validate and return
+                    try:
+                        json.loads(value)  # Validate it's valid JSON
+                        return value
+                    except:
+                        return json.dumps(value)  # Wrap as JSON string
                 else:
-                    import json
                     return json.dumps(value)
             
             elif pg_type == 'ARRAY' or '[]' in str(pg_type):
-                # Handle array types - DuckDB can handle Python lists directly
+                # Convert to PostgreSQL array literal format: {a,b,c}
                 if isinstance(value, list):
-                    return value
+                    # Format as PostgreSQL array literal
+                    formatted_items = []
+                    for item in value:
+                        if item is None:
+                            formatted_items.append('NULL')
+                        elif isinstance(item, str):
+                            # Escape quotes and wrap in quotes
+                            escaped = item.replace('"', '\\"')
+                            formatted_items.append(f'"{escaped}"')
+                        else:
+                            formatted_items.append(str(item))
+                    return '{' + ','.join(formatted_items) + '}'
                 elif isinstance(value, str):
-                    # If it's a PostgreSQL array string like '{a,b,c}', parse it
+                    # Already a PostgreSQL array string
                     if value.startswith('{') and value.endswith('}'):
-                        # Simple parsing for PostgreSQL array format
-                        inner = value[1:-1]
-                        if not inner:
-                            return []
-                        return [item.strip('"') for item in inner.split(',')]
+                        return value
                     return value
                 return value
             
@@ -572,6 +582,8 @@ class PostgreSQLDestination(BaseDestination):
             
             # Map PostgreSQL types to DuckDB types for explicit table creation
             def pg_to_duckdb_type(pg_type):
+                if pg_type in ('json', 'jsonb'):
+                    print(f'pg_type: {pg_type}')
                 if pg_type in ('date',): return 'DATE'
                 if pg_type in ('timestamp', 'timestamp without time zone', 'timestamp with time zone'): return 'TIMESTAMP'
                 if pg_type in ('time', 'time without time zone'): return 'TIME'
@@ -581,10 +593,11 @@ class PostgreSQLDestination(BaseDestination):
                 if pg_type in ('boolean', 'bool'): return 'BOOLEAN'
                 if pg_type in ('real', 'float4'): return 'FLOAT'
                 if pg_type in ('double precision', 'float8', 'numeric', 'decimal'): return 'DOUBLE'
+                # Store complex types as VARCHAR - PostgreSQL will handle implicit conversion
                 if pg_type in ('json', 'jsonb'): return 'JSON'  # DuckDB has JSON type
                 if pg_type == 'text[]': return 'VARCHAR[]'  # Array of text
                 if pg_type == 'integer[]': return 'INTEGER[]'  # Array of integers
-                if '[]' in pg_type: return 'VARCHAR[]'  # Generic array fallback
+                if '[]' in pg_type: return 'VARCHAR[]'  
                 if pg_type in ('geometry', 'geography'): return 'VARCHAR'  # Store as hex WKB
                 return 'VARCHAR'  # Default fallback
                 
@@ -619,31 +632,15 @@ class PostgreSQLDestination(BaseDestination):
                 f'target."{k}" = source."{k}"' for k in key_columns
             ])
             
-            # Identify columns that DuckDB PostgreSQL extension can't handle in MERGE
-            def is_complex_type(col_name):
-                col_info = table_schema.get(col_name, {'type': 'text'})
-                pg_type = col_info.get('type', 'text')
-                return pg_type in ('jsonb', 'json', 'geometry', 'geography') or '[]' in str(pg_type)
-            
-            # Filter columns to only include simple types that DuckDB can handle
-            simple_columns = [c for c in columns if not is_complex_type(c)]
-            
-            if not simple_columns:
-                self._logger.warning(f"No simple columns found for table {target_table}, skipping MERGE")
-                return 0
-            
-            self._logger.debug(f"MERGE will include columns: {simple_columns}")
-            self._logger.debug(f"Skipping complex columns: {[c for c in columns if is_complex_type(c)]}")
-            
-            # Update columns (excluding keys and complex types)
-            update_cols = [c for c in simple_columns if c not in key_columns]
+            # Update columns (excluding keys)
+            update_cols = [c for c in columns if c not in key_columns]
             update_set = ", ".join([
                 f'"{c}" = source."{c}"' for c in update_cols
             ])
             
-            # Insert columns (only simple types)
-            insert_cols = ", ".join([f'"{c}"' for c in simple_columns])
-            insert_vals = ", ".join([f'source."{c}"' for c in simple_columns])
+            # Insert columns
+            insert_cols = ", ".join([f'"{c}"' for c in columns])
+            insert_vals = ", ".join([f'source."{c}"' for c in columns])
             
             merge_sql = f"""
                 MERGE INTO {full_table} AS target

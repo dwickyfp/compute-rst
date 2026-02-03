@@ -5278,3 +5278,736 @@ org.postgresql.util.PSQLException: ERROR: replication slot "supabase_etl_apply_1
 2026-02-03 15:02:30,588 [INFO] [pool-2-thread-1] io.debezium.connector.common.BaseSourceTask (BaseSourceTask.java:380) - 2 records sent during previous 00:00:10.537, last recorded offset of {server=rosetta_my-pipeline} partition is {lsn_proc=2082524848, messageType=MESSAGE, lsn_commit=2082524848, lsn=2082524848, ts_usec=1770105159590776}
 2026-02-03 15:02:51,259 [INFO] [pool-2-thread-1] io.debezium.connector.common.BaseSourceTask (BaseSourceTask.java:380) - 4 records sent during previous 00:00:20.671, last recorded offset of {server=rosetta_my-pipeline} partition is {lsn_proc=2082525096, messageType=MESSAGE, lsn_commit=2082525096, lsn=2082525096, ts_usec=1770105159590776}
 2026-02-03 15:03:32,621 [INFO] [pool-2-thread-1] io.debezium.connector.common.BaseSourceTask (BaseSourceTask.java:380) - 8 records sent during previous 00:00:41.362, last recorded offset of {server=rosetta_my-pipeline} partition is {lsn_proc=2082525584, messageType=MESSAGE, lsn_commit=2082525584, lsn=2082525584, ts_usec=1770105159590776}
+2026-02-03 15:04:04,544 [INFO] [main] org.apache.kafka.common.config.AbstractConfig (AbstractConfig.java:380) - JsonConverterConfig values: 
+	converter.type = key
+	decimal.format = BASE64
+	replace.null.with.default = true
+	schemas.cache.size = 1000
+	schemas.enable = true
+
+2026-02-03 15:04:04,549 [INFO] [main] org.apache.kafka.common.config.AbstractConfig (AbstractConfig.java:380) - JsonConverterConfig values: 
+	converter.type = value
+	decimal.format = BASE64
+	replace.null.with.default = true
+	schemas.cache.size = 1000
+	schemas.enable = true
+
+2026-02-03 15:04:04,576 [INFO] [main] org.apache.kafka.common.config.AbstractConfig (AbstractConfig.java:380) - EmbeddedWorkerConfig values: 
+	access.control.allow.methods = 
+	access.control.allow.origin = 
+	admin.listeners = null
+	bootstrap.servers = [localhost:9092]
+	client.dns.lookup = use_all_dns_ips
+	config.providers = []
+	connector.client.config.override.policy = All
+	header.converter = class org.apache.kafka.connect.storage.SimpleHeaderConverter
+	header.converter.plugin.version = null
+	key.converter = class org.apache.kafka.connect.json.JsonConverter
+	key.converter.plugin.version = null
+	listeners = [http://:8083]
+	metric.reporters = [org.apache.kafka.common.metrics.JmxReporter]
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	offset.flush.interval.ms = 60000
+	offset.flush.timeout.ms = 5000
+	offset.storage.file.filename = tmp\offsets\my-pipeline.dat
+	offset.storage.partitions = null
+	offset.storage.replication.factor = null
+	offset.storage.topic = 
+	plugin.discovery = hybrid_warn
+	plugin.path = null
+	response.http.headers.config = 
+	rest.advertised.host.name = null
+	rest.advertised.listener = null
+	rest.advertised.port = null
+	rest.extension.classes = []
+	ssl.cipher.suites = null
+	ssl.client.auth = none
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+	ssl.endpoint.identification.algorithm = https
+	ssl.engine.factory.class = null
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.certificate.chain = null
+	ssl.keystore.key = null
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLSv1.3
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.certificates = null
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	task.shutdown.graceful.timeout.ms = 5000
+	topic.creation.enable = true
+	topic.tracking.allow.reset = true
+	topic.tracking.enable = true
+	value.converter = class org.apache.kafka.connect.json.JsonConverter
+	value.converter.plugin.version = null
+
+2026-02-03 15:04:04,582 [INFO] [main] org.apache.kafka.common.config.AbstractConfig (AbstractConfig.java:380) - JsonConverterConfig values: 
+	converter.type = key
+	decimal.format = BASE64
+	replace.null.with.default = true
+	schemas.cache.size = 1000
+	schemas.enable = false
+
+2026-02-03 15:04:04,583 [INFO] [main] org.apache.kafka.common.config.AbstractConfig (AbstractConfig.java:380) - JsonConverterConfig values: 
+	converter.type = value
+	decimal.format = BASE64
+	replace.null.with.default = true
+	schemas.cache.size = 1000
+	schemas.enable = false
+
+2026-02-03 15:04:04,595 [INFO] [main] io.debezium.embedded.async.AsyncEmbeddedEngine (AsyncEmbeddedEngine.java:783) - Engine state has changed from 'CREATING' to 'INITIALIZING'
+2026-02-03 15:04:04,652 [INFO] [main] io.debezium.config.CommonConnectorConfig (CommonConnectorConfig.java:2186) - Loading the custom source info struct maker plugin: io.debezium.connector.postgresql.PostgresSourceInfoStructMaker
+2026-02-03 15:04:04,688 [INFO] [main] io.debezium.connector.postgresql.PostgresConnectorConfig (PostgresConnectorConfig.java:1688) - Using LSN flush mode 'connector': Debezium will flush LSN on event processing. The pgjdbc driver keepalive flush is DISABLED; consider using heartbeat.action.query to prevent WAL growth on low-activity databases.
+2026-02-03 15:04:04,690 [INFO] [main] io.debezium.connector.postgresql.PostgresConnectorConfig (PostgresConnectorConfig.java:1742) - Using offset mismatch strategy 'no_validation': Connector will not validate slot position and will attempt to stream from the stored offset. Slot recreation is not detected.
+2026-02-03 15:04:04,693 [INFO] [main] io.debezium.util.Threads (Threads.java:294) - Requested thread factory for component PostgresConnector, id = rosetta_my-pipeline named = connection-validation
+2026-02-03 15:04:04,695 [INFO] [main] io.debezium.util.Threads (Threads.java:311) - Creating thread debezium-postgresconnector-rosetta_my-pipeline-connection-validation
+2026-02-03 15:04:04,973 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-connection-validation] io.debezium.connector.postgresql.PostgresConnector (PostgresConnector.java:174) - Successfully tested connection for jdbc:postgresql://172.16.62.98:5455/postgres with user 'postgres'
+2026-02-03 15:04:04,997 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-connection-validation] io.debezium.util.Threads (Threads.java:294) - Requested thread factory for component JdbcConnection, id = JdbcConnection named = jdbc-connection-close
+2026-02-03 15:04:04,998 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-connection-validation] io.debezium.util.Threads (Threads.java:311) - Creating thread debezium-jdbcconnection-JdbcConnection-jdbc-connection-close
+2026-02-03 15:04:05,002 [INFO] [debezium-jdbcconnection-JdbcConnection-jdbc-connection-close] io.debezium.jdbc.JdbcConnection (JdbcConnection.java:980) - Connection gracefully closed
+2026-02-03 15:04:05,015 [INFO] [main] org.apache.kafka.common.config.AbstractConfig (AbstractConfig.java:380) - JsonConverterConfig values: 
+	converter.type = key
+	decimal.format = BASE64
+	replace.null.with.default = true
+	schemas.cache.size = 1000
+	schemas.enable = false
+
+2026-02-03 15:04:05,017 [INFO] [main] org.apache.kafka.connect.storage.FileOffsetBackingStore (FileOffsetBackingStore.java:64) - Starting FileOffsetBackingStore with file tmp\offsets\my-pipeline.dat
+2026-02-03 15:04:05,044 [INFO] [main] io.debezium.embedded.async.AsyncEmbeddedEngine (AsyncEmbeddedEngine.java:783) - Engine state has changed from 'INITIALIZING' to 'CREATING_TASKS'
+2026-02-03 15:04:05,059 [INFO] [main] io.debezium.embedded.async.AsyncEmbeddedEngine (AsyncEmbeddedEngine.java:783) - Engine state has changed from 'CREATING_TASKS' to 'STARTING_TASKS'
+2026-02-03 15:04:05,061 [INFO] [main] io.debezium.embedded.async.AsyncEmbeddedEngine (AsyncEmbeddedEngine.java:460) - Waiting max. for 40000 ms for individual source tasks to start.
+2026-02-03 15:04:05,063 [INFO] [pool-2-thread-1] io.debezium.config.CommonConnectorConfig (CommonConnectorConfig.java:2186) - Loading the custom source info struct maker plugin: io.debezium.connector.postgresql.PostgresSourceInfoStructMaker
+2026-02-03 15:04:05,065 [INFO] [pool-2-thread-1] io.debezium.connector.postgresql.PostgresConnectorConfig (PostgresConnectorConfig.java:1688) - Using LSN flush mode 'connector': Debezium will flush LSN on event processing. The pgjdbc driver keepalive flush is DISABLED; consider using heartbeat.action.query to prevent WAL growth on low-activity databases.
+2026-02-03 15:04:05,068 [INFO] [pool-2-thread-1] io.debezium.connector.postgresql.PostgresConnectorConfig (PostgresConnectorConfig.java:1742) - Using offset mismatch strategy 'no_validation': Connector will not validate slot position and will attempt to stream from the stored offset. Slot recreation is not detected.
+2026-02-03 15:04:05,076 [INFO] [pool-2-thread-1] io.debezium.openlineage.emitter.NoOpLineageEmitter (NoOpLineageEmitter.java:33) - You are using a no-op lineage emitter. If you want to emit open lineage event, please set 'openlineage.integration.enabled=true'
+2026-02-03 15:04:05,079 [INFO] [pool-2-thread-1] io.debezium.connector.common.BaseSourceTask (BaseSourceTask.java:264) - Starting PostgresConnectorTask with configuration:
+   connector.class = io.debezium.connector.postgresql.PostgresConnector
+   max.queue.size = 8192
+   slot.name = supabase_etl_apply_1
+   record.processing.shutdown.timeout.ms = 1000
+   publication.name = my_publication
+   schema.include.list = public
+   slot.max.retries = 6
+   record.processing.order = ORDERED
+   topic.prefix = rosetta_my-pipeline
+   slot.retry.delay.ms = 10000
+   offset.storage.file.filename = tmp\offsets\my-pipeline.dat
+   heartbeat.action.query = SELECT pg_logical_emit_message(false, 'heartbeat', now()::varchar)
+   poll.interval.ms = 500
+   record.processing.threads = 
+   errors.retry.delay.initial.ms = 300
+   value.converter = org.apache.kafka.connect.json.JsonConverter
+   key.converter = org.apache.kafka.connect.json.JsonConverter
+   database.dbname = postgres
+   database.user = postgres
+   offset.storage = org.apache.kafka.connect.storage.FileOffsetBackingStore
+   slot.drop.on.stop = false
+   offset.flush.timeout.ms = 5000
+   errors.retry.delay.max.ms = 10000
+   heartbeat.interval.ms = 10000
+   plugin.name = pgoutput
+   database.port = 5455
+   offset.flush.interval.ms = 60000
+   internal.task.management.timeout.ms = 40000
+   record.processing.with.serial.consumer = false
+   errors.max.retries = -1
+   database.hostname = 172.16.62.98
+   database.password = ********
+   name = my-pipeline
+   table.include.list = public.tbl_sales_stream_company
+   max.batch.size = 2048
+   snapshot.mode = no_data
+
+2026-02-03 15:04:05,080 [INFO] [pool-2-thread-1] io.debezium.config.CommonConnectorConfig (CommonConnectorConfig.java:2186) - Loading the custom source info struct maker plugin: io.debezium.connector.postgresql.PostgresSourceInfoStructMaker
+2026-02-03 15:04:05,081 [INFO] [pool-2-thread-1] io.debezium.connector.postgresql.PostgresConnectorConfig (PostgresConnectorConfig.java:1688) - Using LSN flush mode 'connector': Debezium will flush LSN on event processing. The pgjdbc driver keepalive flush is DISABLED; consider using heartbeat.action.query to prevent WAL growth on low-activity databases.
+2026-02-03 15:04:05,082 [INFO] [pool-2-thread-1] io.debezium.connector.postgresql.PostgresConnectorConfig (PostgresConnectorConfig.java:1742) - Using offset mismatch strategy 'no_validation': Connector will not validate slot position and will attempt to stream from the stored offset. Slot recreation is not detected.
+2026-02-03 15:04:05,084 [INFO] [pool-2-thread-1] io.debezium.config.CommonConnectorConfig (CommonConnectorConfig.java:1846) - Loading the custom topic naming strategy plugin: io.debezium.schema.SchemaTopicNamingStrategy
+2026-02-03 15:04:05,112 [INFO] [pool-2-thread-1] io.debezium.util.Threads (Threads.java:294) - Requested thread factory for component JdbcConnection, id = JdbcConnection named = jdbc-connection-close
+2026-02-03 15:04:05,113 [INFO] [pool-2-thread-1] io.debezium.util.Threads (Threads.java:311) - Creating thread debezium-jdbcconnection-JdbcConnection-jdbc-connection-close
+2026-02-03 15:04:05,115 [INFO] [debezium-jdbcconnection-JdbcConnection-jdbc-connection-close] io.debezium.jdbc.JdbcConnection (JdbcConnection.java:980) - Connection gracefully closed
+2026-02-03 15:04:05,209 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:13595, name:_pg_user_mappings] is already mapped
+2026-02-03 15:04:05,213 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:13269, name:cardinal_number] is already mapped
+2026-02-03 15:04:05,214 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:13272, name:character_data] is already mapped
+2026-02-03 15:04:05,214 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:13274, name:sql_identifier] is already mapped
+2026-02-03 15:04:05,215 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:13280, name:time_stamp] is already mapped
+2026-02-03 15:04:05,215 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:13282, name:yes_or_no] is already mapped
+2026-02-03 15:04:05,215 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:19151, name:topoelement] is already mapped
+2026-02-03 15:04:05,216 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:19156, name:topoelementarray] is already mapped
+2026-02-03 15:04:05,270 [INFO] [pool-2-thread-1] io.debezium.connector.common.BaseSourceTask (BaseSourceTask.java:602) - Found previous partition offset PostgresPartition [sourcePartition={server=rosetta_my-pipeline}]: {lsn_proc=2082525432, messageType=MESSAGE, lsn_commit=2082525432, lsn=2082525432, ts_usec=1770105159590776}
+2026-02-03 15:04:05,334 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:13595, name:_pg_user_mappings] is already mapped
+2026-02-03 15:04:05,346 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:13269, name:cardinal_number] is already mapped
+2026-02-03 15:04:05,348 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:13272, name:character_data] is already mapped
+2026-02-03 15:04:05,349 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:13274, name:sql_identifier] is already mapped
+2026-02-03 15:04:05,350 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:13280, name:time_stamp] is already mapped
+2026-02-03 15:04:05,350 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:13282, name:yes_or_no] is already mapped
+2026-02-03 15:04:05,350 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:19151, name:topoelement] is already mapped
+2026-02-03 15:04:05,350 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:19156, name:topoelementarray] is already mapped
+2026-02-03 15:04:05,373 [INFO] [pool-2-thread-1] io.debezium.connector.postgresql.PostgresConnectorTask (PostgresConnectorTask.java:174) - Guardrail validation skipped
+2026-02-03 15:04:05,389 [INFO] [pool-2-thread-1] io.debezium.connector.postgresql.connection.PostgresConnection (PostgresConnection.java:359) - Obtained valid replication slot ReplicationSlot [active=false, latestFlushedLsn=LSN{0/7C20D0F8}, catalogXmin=979]
+2026-02-03 15:04:05,392 [INFO] [pool-2-thread-1] io.debezium.connector.postgresql.connection.PostgresConnection (PostgresConnection.java:892) - Slot 'supabase_etl_apply_1' has restart LSN 'LSN{0/7C209B80}'
+2026-02-03 15:04:05,395 [INFO] [pool-2-thread-1] io.debezium.connector.postgresql.PostgresConnectorTask (PostgresConnectorTask.java:188) - Found previous offset PostgresOffsetContext [sourceInfoSchema=Schema{io.debezium.connector.postgresql.Source:STRUCT}, sourceInfo=source_info[server='rosetta_my-pipeline'db='postgres', lsn=LSN{0/7C20D0F8}, messageType=MESSAGE, lastCommitLsn=LSN{0/7C20D0F8}, timestamp=2026-02-03T07:52:39.590776Z, snapshot=FALSE, schema=, table=], lastSnapshotRecord=false, lastCompletelyProcessedLsn=LSN{0/7C20D0F8}, lastCommitLsn=LSN{0/7C20D0F8}, streamingStoppingLsn=null, transactionContext=TransactionContext [currentTransactionId=null, perTableEventCount={}, totalEventCount=0], incrementalSnapshotContext=IncrementalSnapshotContext [windowOpened=false, chunkEndPosition=null, dataCollectionsToSnapshot=[], lastEventKeySent=null, maximumKey=null]]
+2026-02-03 15:04:05,417 [INFO] [pool-2-thread-1] io.debezium.connector.postgresql.PostgresConnectorTask (PostgresConnectorTask.java:329) - user 'postgres' connected to database 'postgres' on PostgreSQL 16.4 on x86_64-pc-linux-musl, compiled by gcc (Alpine 13.2.1_git20240309) 13.2.1 20240309, 64-bit with roles:
+	role 'pg_read_all_settings' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'pg_database_owner' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'pg_stat_scan_tables' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'pg_checkpoint' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'pg_write_server_files' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'pg_use_reserved_connections' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'pg_read_all_data' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'pg_write_all_data' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'pg_monitor' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'pg_read_server_files' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'pg_create_subscription' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'pg_execute_server_program' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'pg_read_all_stats' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'pg_signal_backend' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'postgres' [superuser: true, replication: true, inherit: true, create role: true, create db: true, can log in: true]
+2026-02-03 15:04:05,420 [INFO] [pool-2-thread-1] io.debezium.connector.postgresql.connection.PostgresConnection (PostgresConnection.java:359) - Obtained valid replication slot ReplicationSlot [active=false, latestFlushedLsn=LSN{0/7C20D0F8}, catalogXmin=979]
+2026-02-03 15:04:05,437 [INFO] [pool-2-thread-1] io.debezium.util.Threads (Threads.java:294) - Requested thread factory for component PostgresConnector, id = rosetta_my-pipeline named = SignalProcessor
+2026-02-03 15:04:05,447 [INFO] [pool-2-thread-1] io.debezium.config.CommonConnectorConfig (CommonConnectorConfig.java:1846) - Loading the custom topic naming strategy plugin: io.debezium.schema.SchemaTopicNamingStrategy
+2026-02-03 15:04:05,459 [INFO] [pool-2-thread-1] io.debezium.util.Threads (Threads.java:294) - Requested thread factory for component PostgresConnector, id = rosetta_my-pipeline named = change-event-source-coordinator
+2026-02-03 15:04:05,460 [INFO] [pool-2-thread-1] io.debezium.util.Threads (Threads.java:294) - Requested thread factory for component PostgresConnector, id = rosetta_my-pipeline named = blocking-snapshot
+2026-02-03 15:04:05,468 [INFO] [pool-2-thread-1] io.debezium.util.Threads (Threads.java:311) - Creating thread debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator
+2026-02-03 15:04:05,469 [INFO] [main] io.debezium.embedded.async.AsyncEmbeddedEngine (AsyncEmbeddedEngine.java:500) - All tasks have started successfully.
+2026-02-03 15:04:05,469 [INFO] [main] io.debezium.embedded.async.AsyncEmbeddedEngine (AsyncEmbeddedEngine.java:783) - Engine state has changed from 'STARTING_TASKS' to 'POLLING_TASKS'
+2026-02-03 15:04:05,471 [INFO] [main] io.debezium.embedded.async.AsyncEmbeddedEngine (AsyncEmbeddedEngine.java:562) - Using io.debezium.embedded.async.ParallelSmtAndConvertBatchProcessor processor
+2026-02-03 15:04:05,529 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.pipeline.ChangeEventSourceCoordinator (ChangeEventSourceCoordinator.java:138) - Metrics registered
+2026-02-03 15:04:05,531 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.pipeline.ChangeEventSourceCoordinator (ChangeEventSourceCoordinator.java:141) - Context created
+2026-02-03 15:04:05,536 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.PostgresSnapshotChangeEventSource (PostgresSnapshotChangeEventSource.java:77) - A previous offset indicating a completed snapshot has been found.
+2026-02-03 15:04:05,537 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.PostgresSnapshotChangeEventSource (PostgresSnapshotChangeEventSource.java:85) - According to the connector configuration no snapshot will be executed
+2026-02-03 15:04:05,539 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.pipeline.ChangeEventSourceCoordinator (ChangeEventSourceCoordinator.java:312) - Snapshot ended with SnapshotResult [status=SKIPPED, offset=PostgresOffsetContext [sourceInfoSchema=Schema{io.debezium.connector.postgresql.Source:STRUCT}, sourceInfo=source_info[server='rosetta_my-pipeline'db='postgres', lsn=LSN{0/7C20D0F8}, messageType=MESSAGE, lastCommitLsn=LSN{0/7C20D0F8}, timestamp=2026-02-03T07:52:39.590776Z, snapshot=FALSE, schema=, table=], lastSnapshotRecord=false, lastCompletelyProcessedLsn=LSN{0/7C20D0F8}, lastCommitLsn=LSN{0/7C20D0F8}, streamingStoppingLsn=null, transactionContext=TransactionContext [currentTransactionId=null, perTableEventCount={}, totalEventCount=0], incrementalSnapshotContext=IncrementalSnapshotContext [windowOpened=false, chunkEndPosition=null, dataCollectionsToSnapshot=[], lastEventKeySent=null, maximumKey=null]]]
+2026-02-03 15:04:05,543 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.util.Threads (Threads.java:294) - Requested thread factory for component PostgresStreamingChangeEventSource, id = rosetta_my-pipeline named = lsn-flush
+2026-02-03 15:04:05,544 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.pipeline.ChangeEventSourceCoordinator (ChangeEventSourceCoordinator.java:505) - Connected metrics set to 'true'
+2026-02-03 15:04:05,594 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.PostgresSchema (PostgresSchema.java:107) - REPLICA IDENTITY for 'public.tbl_sales_stream_company' is 'DEFAULT'; UPDATE and DELETE events will contain previous values only for PK columns
+2026-02-03 15:04:05,621 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.pipeline.signal.SignalProcessor (SignalProcessor.java:116) - SignalProcessor started. Scheduling it every 5000ms
+2026-02-03 15:04:05,622 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.util.Threads (Threads.java:311) - Creating thread debezium-postgresconnector-rosetta_my-pipeline-SignalProcessor
+2026-02-03 15:04:05,623 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.pipeline.ChangeEventSourceCoordinator (ChangeEventSourceCoordinator.java:338) - Starting streaming
+2026-02-03 15:04:05,624 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.PostgresStreamingChangeEventSource (PostgresStreamingChangeEventSource.java:172) - Retrieved latest position from stored offset 'LSN{0/7C20D0F8}'
+2026-02-03 15:04:05,625 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.connection.WalPositionLocator (WalPositionLocator.java:55) - Looking for WAL restart position for last commit LSN 'LSN{0/7C20D0F8}' and last change LSN 'LSN{0/7C20D0F8}'
+2026-02-03 15:04:05,625 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.connection.PostgresReplicationConnection (PostgresReplicationConnection.java:219) - Initializing PgOutput logical decoder publication
+2026-02-03 15:04:05,668 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.connection.PostgresConnection (PostgresConnection.java:359) - Obtained valid replication slot ReplicationSlot [active=false, latestFlushedLsn=LSN{0/7C20D0F8}, catalogXmin=979]
+2026-02-03 15:04:05,669 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.util.Threads (Threads.java:294) - Requested thread factory for component JdbcConnection, id = JdbcConnection named = jdbc-connection-close
+2026-02-03 15:04:05,669 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.util.Threads (Threads.java:311) - Creating thread debezium-jdbcconnection-JdbcConnection-jdbc-connection-close
+2026-02-03 15:04:05,670 [INFO] [debezium-jdbcconnection-JdbcConnection-jdbc-connection-close] io.debezium.jdbc.JdbcConnection (JdbcConnection.java:980) - Connection gracefully closed
+2026-02-03 15:04:05,674 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.connection.PostgresReplicationConnection (PostgresReplicationConnection.java:1071) - Starting replication stream from LSN LSN{0/7C20D0F8} with automaticFlush=false (mode=CONNECTOR)
+2026-02-03 15:04:05,692 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.util.Threads (Threads.java:294) - Requested thread factory for component PostgresConnector, id = rosetta_my-pipeline named = keep-alive
+2026-02-03 15:04:05,694 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.util.Threads (Threads.java:311) - Creating thread debezium-postgresconnector-rosetta_my-pipeline-keep-alive
+2026-02-03 15:04:05,695 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.PostgresStreamingChangeEventSource (PostgresStreamingChangeEventSource.java:407) - Searching for WAL resume position
+2026-02-03 15:04:06,207 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.connection.WalPositionLocator (WalPositionLocator.java:78) - First LSN 'LSN{0/7C20D190}' received
+2026-02-03 15:04:07,247 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.connection.WalPositionLocator (WalPositionLocator.java:115) - Received COMMIT LSN 'LSN{0/7C20E6C8}' larger than than last stored commit LSN 'LSN{0/7C20D0F8}'
+2026-02-03 15:04:07,247 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.connection.WalPositionLocator (WalPositionLocator.java:127) - Will restart from LSN 'LSN{0/7C20D320}' that is start of the first unprocessed transaction
+2026-02-03 15:04:07,248 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.PostgresStreamingChangeEventSource (PostgresStreamingChangeEventSource.java:429) - WAL resume position 'LSN{0/7C20D320}' discovered
+2026-02-03 15:04:07,250 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.util.Threads (Threads.java:294) - Requested thread factory for component JdbcConnection, id = JdbcConnection named = jdbc-connection-close
+2026-02-03 15:04:07,250 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.util.Threads (Threads.java:311) - Creating thread debezium-jdbcconnection-JdbcConnection-jdbc-connection-close
+2026-02-03 15:04:07,251 [INFO] [debezium-jdbcconnection-JdbcConnection-jdbc-connection-close] io.debezium.jdbc.JdbcConnection (JdbcConnection.java:980) - Connection gracefully closed
+2026-02-03 15:04:07,251 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.util.Threads (Threads.java:294) - Requested thread factory for component JdbcConnection, id = JdbcConnection named = jdbc-connection-close
+2026-02-03 15:04:07,251 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.util.Threads (Threads.java:311) - Creating thread debezium-jdbcconnection-JdbcConnection-jdbc-connection-close
+2026-02-03 15:04:07,252 [INFO] [debezium-jdbcconnection-JdbcConnection-jdbc-connection-close] io.debezium.jdbc.JdbcConnection (JdbcConnection.java:980) - Connection gracefully closed
+2026-02-03 15:04:07,272 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.connection.PostgresReplicationConnection (PostgresReplicationConnection.java:219) - Initializing PgOutput logical decoder publication
+2026-02-03 15:04:07,284 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.connection.PostgresReplicationConnection (PostgresReplicationConnection.java:1071) - Starting replication stream from LSN LSN{0/7C20D0F8} with automaticFlush=false (mode=CONNECTOR)
+2026-02-03 15:04:07,309 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.util.Threads (Threads.java:294) - Requested thread factory for component PostgresConnector, id = rosetta_my-pipeline named = keep-alive
+2026-02-03 15:04:07,310 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.util.Threads (Threads.java:311) - Creating thread debezium-postgresconnector-rosetta_my-pipeline-keep-alive
+2026-02-03 15:04:07,311 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.PostgresStreamingChangeEventSource (PostgresStreamingChangeEventSource.java:255) - Processing messages
+2026-02-03 15:04:07,312 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.connection.AbstractMessageDecoder (AbstractMessageDecoder.java:54) - Streaming requested from LSN LSN{0/7C20D0F8}, received LSN LSN{0/7C20D190} identified as already processed
+2026-02-03 15:04:07,331 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.connection.WalPositionLocator (WalPositionLocator.java:159) - Message with LSN 'LSN{0/7C20D320}' arrived, switching off the filtering
+2026-02-03 15:04:07,777 [INFO] [pool-2-thread-1] io.debezium.util.Threads (Threads.java:311) - Creating thread debezium-postgresstreamingchangeeventsource-rosetta_my-pipeline-lsn-flush
+2026-02-03 15:04:15,841 [INFO] [pool-2-thread-1] io.debezium.connector.common.BaseSourceTask (BaseSourceTask.java:380) - 6 records sent during previous 00:00:10.785, last recorded offset of {server=rosetta_my-pipeline} partition is {lsn_proc=2082531016, messageType=COMMIT, lsn_commit=2082531016, lsn=2082531016, txId=979, ts_usec=1770105275296467}
+2026-02-03 15:04:26,530 [INFO] [pool-2-thread-1] io.debezium.connector.common.BaseSourceTask (BaseSourceTask.java:380) - 2 records sent during previous 00:00:10.689, last recorded offset of {server=rosetta_my-pipeline} partition is {lsn_proc=2082531112, messageType=MESSAGE, lsn_commit=2082531112, lsn=2082531112, ts_usec=1770105275296467}
+2026-02-03 15:04:47,205 [INFO] [pool-2-thread-1] io.debezium.connector.common.BaseSourceTask (BaseSourceTask.java:380) - 4 records sent during previous 00:00:20.675, last recorded offset of {server=rosetta_my-pipeline} partition is {lsn_proc=2082531360, messageType=MESSAGE, lsn_commit=2082531360, lsn=2082531360, ts_usec=1770105275296467}
+2026-02-03 15:05:27,937 [INFO] [pool-2-thread-1] io.debezium.connector.common.BaseSourceTask (BaseSourceTask.java:380) - 8 records sent during previous 00:00:40.732, last recorded offset of {server=rosetta_my-pipeline} partition is {lsn_proc=2082531856, messageType=MESSAGE, lsn_commit=2082531856, lsn=2082531856, ts_usec=1770105275296467}
+2026-02-03 15:06:50,590 [INFO] [pool-2-thread-1] io.debezium.connector.common.BaseSourceTask (BaseSourceTask.java:380) - 16 records sent during previous 00:01:22.653, last recorded offset of {server=rosetta_my-pipeline} partition is {lsn_proc=2082532848, messageType=MESSAGE, lsn_commit=2082532848, lsn=2082532848, ts_usec=1770105275296467}
+2026-02-03 15:07:44,890 [INFO] [main] org.apache.kafka.common.config.AbstractConfig (AbstractConfig.java:380) - JsonConverterConfig values: 
+	converter.type = key
+	decimal.format = BASE64
+	replace.null.with.default = true
+	schemas.cache.size = 1000
+	schemas.enable = true
+
+2026-02-03 15:07:44,896 [INFO] [main] org.apache.kafka.common.config.AbstractConfig (AbstractConfig.java:380) - JsonConverterConfig values: 
+	converter.type = value
+	decimal.format = BASE64
+	replace.null.with.default = true
+	schemas.cache.size = 1000
+	schemas.enable = true
+
+2026-02-03 15:07:44,926 [INFO] [main] org.apache.kafka.common.config.AbstractConfig (AbstractConfig.java:380) - EmbeddedWorkerConfig values: 
+	access.control.allow.methods = 
+	access.control.allow.origin = 
+	admin.listeners = null
+	bootstrap.servers = [localhost:9092]
+	client.dns.lookup = use_all_dns_ips
+	config.providers = []
+	connector.client.config.override.policy = All
+	header.converter = class org.apache.kafka.connect.storage.SimpleHeaderConverter
+	header.converter.plugin.version = null
+	key.converter = class org.apache.kafka.connect.json.JsonConverter
+	key.converter.plugin.version = null
+	listeners = [http://:8083]
+	metric.reporters = [org.apache.kafka.common.metrics.JmxReporter]
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	offset.flush.interval.ms = 60000
+	offset.flush.timeout.ms = 5000
+	offset.storage.file.filename = tmp\offsets\my-pipeline.dat
+	offset.storage.partitions = null
+	offset.storage.replication.factor = null
+	offset.storage.topic = 
+	plugin.discovery = hybrid_warn
+	plugin.path = null
+	response.http.headers.config = 
+	rest.advertised.host.name = null
+	rest.advertised.listener = null
+	rest.advertised.port = null
+	rest.extension.classes = []
+	ssl.cipher.suites = null
+	ssl.client.auth = none
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+	ssl.endpoint.identification.algorithm = https
+	ssl.engine.factory.class = null
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.certificate.chain = null
+	ssl.keystore.key = null
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLSv1.3
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.certificates = null
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	task.shutdown.graceful.timeout.ms = 5000
+	topic.creation.enable = true
+	topic.tracking.allow.reset = true
+	topic.tracking.enable = true
+	value.converter = class org.apache.kafka.connect.json.JsonConverter
+	value.converter.plugin.version = null
+
+2026-02-03 15:07:44,938 [INFO] [main] org.apache.kafka.common.config.AbstractConfig (AbstractConfig.java:380) - JsonConverterConfig values: 
+	converter.type = key
+	decimal.format = BASE64
+	replace.null.with.default = true
+	schemas.cache.size = 1000
+	schemas.enable = false
+
+2026-02-03 15:07:44,939 [INFO] [main] org.apache.kafka.common.config.AbstractConfig (AbstractConfig.java:380) - JsonConverterConfig values: 
+	converter.type = value
+	decimal.format = BASE64
+	replace.null.with.default = true
+	schemas.cache.size = 1000
+	schemas.enable = false
+
+2026-02-03 15:07:44,952 [INFO] [main] io.debezium.embedded.async.AsyncEmbeddedEngine (AsyncEmbeddedEngine.java:783) - Engine state has changed from 'CREATING' to 'INITIALIZING'
+2026-02-03 15:07:45,022 [INFO] [main] io.debezium.config.CommonConnectorConfig (CommonConnectorConfig.java:2186) - Loading the custom source info struct maker plugin: io.debezium.connector.postgresql.PostgresSourceInfoStructMaker
+2026-02-03 15:07:45,067 [INFO] [main] io.debezium.connector.postgresql.PostgresConnectorConfig (PostgresConnectorConfig.java:1688) - Using LSN flush mode 'connector': Debezium will flush LSN on event processing. The pgjdbc driver keepalive flush is DISABLED; consider using heartbeat.action.query to prevent WAL growth on low-activity databases.
+2026-02-03 15:07:45,067 [INFO] [main] io.debezium.connector.postgresql.PostgresConnectorConfig (PostgresConnectorConfig.java:1742) - Using offset mismatch strategy 'no_validation': Connector will not validate slot position and will attempt to stream from the stored offset. Slot recreation is not detected.
+2026-02-03 15:07:45,069 [INFO] [main] io.debezium.util.Threads (Threads.java:294) - Requested thread factory for component PostgresConnector, id = rosetta_my-pipeline named = connection-validation
+2026-02-03 15:07:45,070 [INFO] [main] io.debezium.util.Threads (Threads.java:311) - Creating thread debezium-postgresconnector-rosetta_my-pipeline-connection-validation
+2026-02-03 15:07:45,368 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-connection-validation] io.debezium.connector.postgresql.PostgresConnector (PostgresConnector.java:174) - Successfully tested connection for jdbc:postgresql://172.16.62.98:5455/postgres with user 'postgres'
+2026-02-03 15:07:45,398 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-connection-validation] io.debezium.util.Threads (Threads.java:294) - Requested thread factory for component JdbcConnection, id = JdbcConnection named = jdbc-connection-close
+2026-02-03 15:07:45,399 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-connection-validation] io.debezium.util.Threads (Threads.java:311) - Creating thread debezium-jdbcconnection-JdbcConnection-jdbc-connection-close
+2026-02-03 15:07:45,402 [INFO] [debezium-jdbcconnection-JdbcConnection-jdbc-connection-close] io.debezium.jdbc.JdbcConnection (JdbcConnection.java:980) - Connection gracefully closed
+2026-02-03 15:07:45,416 [INFO] [main] org.apache.kafka.common.config.AbstractConfig (AbstractConfig.java:380) - JsonConverterConfig values: 
+	converter.type = key
+	decimal.format = BASE64
+	replace.null.with.default = true
+	schemas.cache.size = 1000
+	schemas.enable = false
+
+2026-02-03 15:07:45,417 [INFO] [main] org.apache.kafka.connect.storage.FileOffsetBackingStore (FileOffsetBackingStore.java:64) - Starting FileOffsetBackingStore with file tmp\offsets\my-pipeline.dat
+2026-02-03 15:07:45,457 [INFO] [main] io.debezium.embedded.async.AsyncEmbeddedEngine (AsyncEmbeddedEngine.java:783) - Engine state has changed from 'INITIALIZING' to 'CREATING_TASKS'
+2026-02-03 15:07:45,476 [INFO] [main] io.debezium.embedded.async.AsyncEmbeddedEngine (AsyncEmbeddedEngine.java:783) - Engine state has changed from 'CREATING_TASKS' to 'STARTING_TASKS'
+2026-02-03 15:07:45,479 [INFO] [main] io.debezium.embedded.async.AsyncEmbeddedEngine (AsyncEmbeddedEngine.java:460) - Waiting max. for 40000 ms for individual source tasks to start.
+2026-02-03 15:07:45,480 [INFO] [pool-2-thread-1] io.debezium.config.CommonConnectorConfig (CommonConnectorConfig.java:2186) - Loading the custom source info struct maker plugin: io.debezium.connector.postgresql.PostgresSourceInfoStructMaker
+2026-02-03 15:07:45,480 [INFO] [pool-2-thread-1] io.debezium.connector.postgresql.PostgresConnectorConfig (PostgresConnectorConfig.java:1688) - Using LSN flush mode 'connector': Debezium will flush LSN on event processing. The pgjdbc driver keepalive flush is DISABLED; consider using heartbeat.action.query to prevent WAL growth on low-activity databases.
+2026-02-03 15:07:45,480 [INFO] [pool-2-thread-1] io.debezium.connector.postgresql.PostgresConnectorConfig (PostgresConnectorConfig.java:1742) - Using offset mismatch strategy 'no_validation': Connector will not validate slot position and will attempt to stream from the stored offset. Slot recreation is not detected.
+2026-02-03 15:07:45,492 [INFO] [pool-2-thread-1] io.debezium.openlineage.emitter.NoOpLineageEmitter (NoOpLineageEmitter.java:33) - You are using a no-op lineage emitter. If you want to emit open lineage event, please set 'openlineage.integration.enabled=true'
+2026-02-03 15:07:45,497 [INFO] [pool-2-thread-1] io.debezium.connector.common.BaseSourceTask (BaseSourceTask.java:264) - Starting PostgresConnectorTask with configuration:
+   connector.class = io.debezium.connector.postgresql.PostgresConnector
+   max.queue.size = 8192
+   slot.name = supabase_etl_apply_1
+   record.processing.shutdown.timeout.ms = 1000
+   publication.name = my_publication
+   schema.include.list = public
+   slot.max.retries = 6
+   record.processing.order = ORDERED
+   topic.prefix = rosetta_my-pipeline
+   slot.retry.delay.ms = 10000
+   offset.storage.file.filename = tmp\offsets\my-pipeline.dat
+   heartbeat.action.query = SELECT pg_logical_emit_message(false, 'heartbeat', now()::varchar)
+   poll.interval.ms = 500
+   record.processing.threads = 
+   errors.retry.delay.initial.ms = 300
+   value.converter = org.apache.kafka.connect.json.JsonConverter
+   key.converter = org.apache.kafka.connect.json.JsonConverter
+   database.dbname = postgres
+   database.user = postgres
+   offset.storage = org.apache.kafka.connect.storage.FileOffsetBackingStore
+   slot.drop.on.stop = false
+   offset.flush.timeout.ms = 5000
+   errors.retry.delay.max.ms = 10000
+   heartbeat.interval.ms = 10000
+   plugin.name = pgoutput
+   database.port = 5455
+   offset.flush.interval.ms = 60000
+   internal.task.management.timeout.ms = 40000
+   record.processing.with.serial.consumer = false
+   errors.max.retries = -1
+   database.hostname = 172.16.62.98
+   database.password = ********
+   name = my-pipeline
+   table.include.list = public.tbl_sales_stream_company
+   max.batch.size = 2048
+   snapshot.mode = no_data
+
+2026-02-03 15:07:45,510 [INFO] [pool-2-thread-1] io.debezium.config.CommonConnectorConfig (CommonConnectorConfig.java:2186) - Loading the custom source info struct maker plugin: io.debezium.connector.postgresql.PostgresSourceInfoStructMaker
+2026-02-03 15:07:45,512 [INFO] [pool-2-thread-1] io.debezium.connector.postgresql.PostgresConnectorConfig (PostgresConnectorConfig.java:1688) - Using LSN flush mode 'connector': Debezium will flush LSN on event processing. The pgjdbc driver keepalive flush is DISABLED; consider using heartbeat.action.query to prevent WAL growth on low-activity databases.
+2026-02-03 15:07:45,514 [INFO] [pool-2-thread-1] io.debezium.connector.postgresql.PostgresConnectorConfig (PostgresConnectorConfig.java:1742) - Using offset mismatch strategy 'no_validation': Connector will not validate slot position and will attempt to stream from the stored offset. Slot recreation is not detected.
+2026-02-03 15:07:45,516 [INFO] [pool-2-thread-1] io.debezium.config.CommonConnectorConfig (CommonConnectorConfig.java:1846) - Loading the custom topic naming strategy plugin: io.debezium.schema.SchemaTopicNamingStrategy
+2026-02-03 15:07:45,539 [INFO] [pool-2-thread-1] io.debezium.util.Threads (Threads.java:294) - Requested thread factory for component JdbcConnection, id = JdbcConnection named = jdbc-connection-close
+2026-02-03 15:07:45,540 [INFO] [pool-2-thread-1] io.debezium.util.Threads (Threads.java:311) - Creating thread debezium-jdbcconnection-JdbcConnection-jdbc-connection-close
+2026-02-03 15:07:45,542 [INFO] [debezium-jdbcconnection-JdbcConnection-jdbc-connection-close] io.debezium.jdbc.JdbcConnection (JdbcConnection.java:980) - Connection gracefully closed
+2026-02-03 15:07:45,630 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:13595, name:_pg_user_mappings] is already mapped
+2026-02-03 15:07:45,639 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:13269, name:cardinal_number] is already mapped
+2026-02-03 15:07:45,640 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:13272, name:character_data] is already mapped
+2026-02-03 15:07:45,640 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:13274, name:sql_identifier] is already mapped
+2026-02-03 15:07:45,640 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:13280, name:time_stamp] is already mapped
+2026-02-03 15:07:45,640 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:13282, name:yes_or_no] is already mapped
+2026-02-03 15:07:45,641 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:19151, name:topoelement] is already mapped
+2026-02-03 15:07:45,641 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:19156, name:topoelementarray] is already mapped
+2026-02-03 15:07:45,699 [INFO] [pool-2-thread-1] io.debezium.connector.common.BaseSourceTask (BaseSourceTask.java:602) - Found previous partition offset PostgresPartition [sourcePartition={server=rosetta_my-pipeline}]: {lsn_proc=2082533096, messageType=MESSAGE, lsn_commit=2082533096, lsn=2082533096, ts_usec=1770105275296467}
+2026-02-03 15:07:45,768 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:13595, name:_pg_user_mappings] is already mapped
+2026-02-03 15:07:45,775 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:13269, name:cardinal_number] is already mapped
+2026-02-03 15:07:45,776 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:13272, name:character_data] is already mapped
+2026-02-03 15:07:45,776 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:13274, name:sql_identifier] is already mapped
+2026-02-03 15:07:45,776 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:13280, name:time_stamp] is already mapped
+2026-02-03 15:07:45,776 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:13282, name:yes_or_no] is already mapped
+2026-02-03 15:07:45,777 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:19151, name:topoelement] is already mapped
+2026-02-03 15:07:45,778 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:19156, name:topoelementarray] is already mapped
+2026-02-03 15:07:45,793 [INFO] [pool-2-thread-1] io.debezium.connector.postgresql.PostgresConnectorTask (PostgresConnectorTask.java:174) - Guardrail validation skipped
+2026-02-03 15:07:45,804 [INFO] [pool-2-thread-1] io.debezium.connector.postgresql.connection.PostgresConnection (PostgresConnection.java:359) - Obtained valid replication slot ReplicationSlot [active=false, latestFlushedLsn=LSN{0/7C20EEE8}, catalogXmin=980]
+2026-02-03 15:07:45,807 [INFO] [pool-2-thread-1] io.debezium.connector.postgresql.connection.PostgresConnection (PostgresConnection.java:892) - Slot 'supabase_etl_apply_1' has restart LSN 'LSN{0/7C20ECF8}'
+2026-02-03 15:07:45,811 [INFO] [pool-2-thread-1] io.debezium.connector.postgresql.PostgresConnectorTask (PostgresConnectorTask.java:188) - Found previous offset PostgresOffsetContext [sourceInfoSchema=Schema{io.debezium.connector.postgresql.Source:STRUCT}, sourceInfo=source_info[server='rosetta_my-pipeline'db='postgres', lsn=LSN{0/7C20EEE8}, messageType=MESSAGE, lastCommitLsn=LSN{0/7C20EEE8}, timestamp=2026-02-03T07:54:35.296467Z, snapshot=FALSE, schema=, table=], lastSnapshotRecord=false, lastCompletelyProcessedLsn=LSN{0/7C20EEE8}, lastCommitLsn=LSN{0/7C20EEE8}, streamingStoppingLsn=null, transactionContext=TransactionContext [currentTransactionId=null, perTableEventCount={}, totalEventCount=0], incrementalSnapshotContext=IncrementalSnapshotContext [windowOpened=false, chunkEndPosition=null, dataCollectionsToSnapshot=[], lastEventKeySent=null, maximumKey=null]]
+2026-02-03 15:07:45,831 [INFO] [pool-2-thread-1] io.debezium.connector.postgresql.PostgresConnectorTask (PostgresConnectorTask.java:329) - user 'postgres' connected to database 'postgres' on PostgreSQL 16.4 on x86_64-pc-linux-musl, compiled by gcc (Alpine 13.2.1_git20240309) 13.2.1 20240309, 64-bit with roles:
+	role 'pg_read_all_settings' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'pg_database_owner' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'pg_stat_scan_tables' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'pg_checkpoint' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'pg_write_server_files' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'pg_use_reserved_connections' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'pg_read_all_data' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'pg_write_all_data' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'pg_monitor' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'pg_read_server_files' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'pg_create_subscription' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'pg_execute_server_program' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'pg_read_all_stats' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'pg_signal_backend' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'postgres' [superuser: true, replication: true, inherit: true, create role: true, create db: true, can log in: true]
+2026-02-03 15:07:45,835 [INFO] [pool-2-thread-1] io.debezium.connector.postgresql.connection.PostgresConnection (PostgresConnection.java:359) - Obtained valid replication slot ReplicationSlot [active=false, latestFlushedLsn=LSN{0/7C20EEE8}, catalogXmin=980]
+2026-02-03 15:07:45,852 [INFO] [pool-2-thread-1] io.debezium.util.Threads (Threads.java:294) - Requested thread factory for component PostgresConnector, id = rosetta_my-pipeline named = SignalProcessor
+2026-02-03 15:07:45,861 [INFO] [pool-2-thread-1] io.debezium.config.CommonConnectorConfig (CommonConnectorConfig.java:1846) - Loading the custom topic naming strategy plugin: io.debezium.schema.SchemaTopicNamingStrategy
+2026-02-03 15:07:45,874 [INFO] [pool-2-thread-1] io.debezium.util.Threads (Threads.java:294) - Requested thread factory for component PostgresConnector, id = rosetta_my-pipeline named = change-event-source-coordinator
+2026-02-03 15:07:45,876 [INFO] [pool-2-thread-1] io.debezium.util.Threads (Threads.java:294) - Requested thread factory for component PostgresConnector, id = rosetta_my-pipeline named = blocking-snapshot
+2026-02-03 15:07:45,884 [INFO] [pool-2-thread-1] io.debezium.util.Threads (Threads.java:311) - Creating thread debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator
+2026-02-03 15:07:45,889 [INFO] [main] io.debezium.embedded.async.AsyncEmbeddedEngine (AsyncEmbeddedEngine.java:500) - All tasks have started successfully.
+2026-02-03 15:07:45,890 [INFO] [main] io.debezium.embedded.async.AsyncEmbeddedEngine (AsyncEmbeddedEngine.java:783) - Engine state has changed from 'STARTING_TASKS' to 'POLLING_TASKS'
+2026-02-03 15:07:45,891 [INFO] [main] io.debezium.embedded.async.AsyncEmbeddedEngine (AsyncEmbeddedEngine.java:562) - Using io.debezium.embedded.async.ParallelSmtAndConvertBatchProcessor processor
+2026-02-03 15:07:45,934 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.pipeline.ChangeEventSourceCoordinator (ChangeEventSourceCoordinator.java:138) - Metrics registered
+2026-02-03 15:07:45,937 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.pipeline.ChangeEventSourceCoordinator (ChangeEventSourceCoordinator.java:141) - Context created
+2026-02-03 15:07:45,942 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.PostgresSnapshotChangeEventSource (PostgresSnapshotChangeEventSource.java:77) - A previous offset indicating a completed snapshot has been found.
+2026-02-03 15:07:45,943 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.PostgresSnapshotChangeEventSource (PostgresSnapshotChangeEventSource.java:85) - According to the connector configuration no snapshot will be executed
+2026-02-03 15:07:45,946 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.pipeline.ChangeEventSourceCoordinator (ChangeEventSourceCoordinator.java:312) - Snapshot ended with SnapshotResult [status=SKIPPED, offset=PostgresOffsetContext [sourceInfoSchema=Schema{io.debezium.connector.postgresql.Source:STRUCT}, sourceInfo=source_info[server='rosetta_my-pipeline'db='postgres', lsn=LSN{0/7C20EEE8}, messageType=MESSAGE, lastCommitLsn=LSN{0/7C20EEE8}, timestamp=2026-02-03T07:54:35.296467Z, snapshot=FALSE, schema=, table=], lastSnapshotRecord=false, lastCompletelyProcessedLsn=LSN{0/7C20EEE8}, lastCommitLsn=LSN{0/7C20EEE8}, streamingStoppingLsn=null, transactionContext=TransactionContext [currentTransactionId=null, perTableEventCount={}, totalEventCount=0], incrementalSnapshotContext=IncrementalSnapshotContext [windowOpened=false, chunkEndPosition=null, dataCollectionsToSnapshot=[], lastEventKeySent=null, maximumKey=null]]]
+2026-02-03 15:07:45,953 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.util.Threads (Threads.java:294) - Requested thread factory for component PostgresStreamingChangeEventSource, id = rosetta_my-pipeline named = lsn-flush
+2026-02-03 15:07:45,953 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.pipeline.ChangeEventSourceCoordinator (ChangeEventSourceCoordinator.java:505) - Connected metrics set to 'true'
+2026-02-03 15:07:46,009 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.PostgresSchema (PostgresSchema.java:107) - REPLICA IDENTITY for 'public.tbl_sales_stream_company' is 'DEFAULT'; UPDATE and DELETE events will contain previous values only for PK columns
+2026-02-03 15:07:46,038 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.pipeline.signal.SignalProcessor (SignalProcessor.java:116) - SignalProcessor started. Scheduling it every 5000ms
+2026-02-03 15:07:46,039 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.util.Threads (Threads.java:311) - Creating thread debezium-postgresconnector-rosetta_my-pipeline-SignalProcessor
+2026-02-03 15:07:46,040 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.pipeline.ChangeEventSourceCoordinator (ChangeEventSourceCoordinator.java:338) - Starting streaming
+2026-02-03 15:07:46,041 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.PostgresStreamingChangeEventSource (PostgresStreamingChangeEventSource.java:172) - Retrieved latest position from stored offset 'LSN{0/7C20EEE8}'
+2026-02-03 15:07:46,042 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.connection.WalPositionLocator (WalPositionLocator.java:55) - Looking for WAL restart position for last commit LSN 'LSN{0/7C20EEE8}' and last change LSN 'LSN{0/7C20EEE8}'
+2026-02-03 15:07:46,043 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.connection.PostgresReplicationConnection (PostgresReplicationConnection.java:219) - Initializing PgOutput logical decoder publication
+2026-02-03 15:07:46,094 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.connection.PostgresConnection (PostgresConnection.java:359) - Obtained valid replication slot ReplicationSlot [active=false, latestFlushedLsn=LSN{0/7C20EEE8}, catalogXmin=980]
+2026-02-03 15:07:46,095 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.util.Threads (Threads.java:294) - Requested thread factory for component JdbcConnection, id = JdbcConnection named = jdbc-connection-close
+2026-02-03 15:07:46,096 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.util.Threads (Threads.java:311) - Creating thread debezium-jdbcconnection-JdbcConnection-jdbc-connection-close
+2026-02-03 15:07:46,097 [INFO] [debezium-jdbcconnection-JdbcConnection-jdbc-connection-close] io.debezium.jdbc.JdbcConnection (JdbcConnection.java:980) - Connection gracefully closed
+2026-02-03 15:07:46,099 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.connection.PostgresReplicationConnection (PostgresReplicationConnection.java:1071) - Starting replication stream from LSN LSN{0/7C20EEE8} with automaticFlush=false (mode=CONNECTOR)
+2026-02-03 15:07:46,130 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.util.Threads (Threads.java:294) - Requested thread factory for component PostgresConnector, id = rosetta_my-pipeline named = keep-alive
+2026-02-03 15:07:46,131 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.util.Threads (Threads.java:311) - Creating thread debezium-postgresconnector-rosetta_my-pipeline-keep-alive
+2026-02-03 15:07:46,133 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.PostgresStreamingChangeEventSource (PostgresStreamingChangeEventSource.java:407) - Searching for WAL resume position
+2026-02-03 15:07:46,648 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.connection.WalPositionLocator (WalPositionLocator.java:78) - First LSN 'LSN{0/7C20F028}' received
+2026-02-03 15:07:56,280 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.connection.WalPositionLocator (WalPositionLocator.java:115) - Received COMMIT LSN 'LSN{0/7C212A90}' larger than than last stored commit LSN 'LSN{0/7C20EEE8}'
+2026-02-03 15:07:56,281 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.connection.WalPositionLocator (WalPositionLocator.java:127) - Will restart from LSN 'LSN{0/7C20F1C0}' that is start of the first unprocessed transaction
+2026-02-03 15:07:56,281 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.PostgresStreamingChangeEventSource (PostgresStreamingChangeEventSource.java:429) - WAL resume position 'LSN{0/7C20F1C0}' discovered
+2026-02-03 15:07:56,283 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.util.Threads (Threads.java:294) - Requested thread factory for component JdbcConnection, id = JdbcConnection named = jdbc-connection-close
+2026-02-03 15:07:56,283 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.util.Threads (Threads.java:311) - Creating thread debezium-jdbcconnection-JdbcConnection-jdbc-connection-close
+2026-02-03 15:07:56,284 [INFO] [debezium-jdbcconnection-JdbcConnection-jdbc-connection-close] io.debezium.jdbc.JdbcConnection (JdbcConnection.java:980) - Connection gracefully closed
+2026-02-03 15:07:56,284 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.util.Threads (Threads.java:294) - Requested thread factory for component JdbcConnection, id = JdbcConnection named = jdbc-connection-close
+2026-02-03 15:07:56,285 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.util.Threads (Threads.java:311) - Creating thread debezium-jdbcconnection-JdbcConnection-jdbc-connection-close
+2026-02-03 15:07:56,285 [INFO] [debezium-jdbcconnection-JdbcConnection-jdbc-connection-close] io.debezium.jdbc.JdbcConnection (JdbcConnection.java:980) - Connection gracefully closed
+2026-02-03 15:07:56,319 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.connection.PostgresReplicationConnection (PostgresReplicationConnection.java:219) - Initializing PgOutput logical decoder publication
+2026-02-03 15:07:56,324 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.connection.PostgresReplicationConnection (PostgresReplicationConnection.java:1071) - Starting replication stream from LSN LSN{0/7C20EEE8} with automaticFlush=false (mode=CONNECTOR)
+2026-02-03 15:07:56,349 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.util.Threads (Threads.java:294) - Requested thread factory for component PostgresConnector, id = rosetta_my-pipeline named = keep-alive
+2026-02-03 15:07:56,350 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.util.Threads (Threads.java:311) - Creating thread debezium-postgresconnector-rosetta_my-pipeline-keep-alive
+2026-02-03 15:07:56,352 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.PostgresStreamingChangeEventSource (PostgresStreamingChangeEventSource.java:255) - Processing messages
+2026-02-03 15:07:56,352 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.connection.AbstractMessageDecoder (AbstractMessageDecoder.java:54) - Streaming requested from LSN LSN{0/7C20EEE8}, received LSN LSN{0/7C20F028} identified as already processed
+2026-02-03 15:07:56,370 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.connection.WalPositionLocator (WalPositionLocator.java:159) - Message with LSN 'LSN{0/7C20F1C0}' arrived, switching off the filtering
+2026-02-03 15:07:56,459 [INFO] [pool-2-thread-1] io.debezium.connector.common.BaseSourceTask (BaseSourceTask.java:380) - 6 records sent during previous 00:00:10.99, last recorded offset of {server=rosetta_my-pipeline} partition is {lsn_proc=2082547328, messageType=INSERT, lsn_commit=2082533096, lsn=2082547328, txId=980, ts_usec=1770105504306028}
+2026-02-03 15:07:56,853 [INFO] [pool-2-thread-1] io.debezium.util.Threads (Threads.java:311) - Creating thread debezium-postgresstreamingchangeeventsource-rosetta_my-pipeline-lsn-flush
+2026-02-03 15:08:07,044 [INFO] [pool-2-thread-1] io.debezium.connector.common.BaseSourceTask (BaseSourceTask.java:380) - 2 records sent during previous 00:00:10.585, last recorded offset of {server=rosetta_my-pipeline} partition is {lsn_proc=2082548464, messageType=MESSAGE, lsn_commit=2082548464, lsn=2082548464, ts_usec=1770105504306028}
+2026-02-03 15:08:28,180 [INFO] [pool-2-thread-1] io.debezium.connector.common.BaseSourceTask (BaseSourceTask.java:380) - 4 records sent during previous 00:00:21.136, last recorded offset of {server=rosetta_my-pipeline} partition is {lsn_proc=2082548712, messageType=MESSAGE, lsn_commit=2082548712, lsn=2082548712, ts_usec=1770105504306028}
+2026-02-03 15:09:00,325 [INFO] [main] org.apache.kafka.common.config.AbstractConfig (AbstractConfig.java:380) - JsonConverterConfig values: 
+	converter.type = key
+	decimal.format = BASE64
+	replace.null.with.default = true
+	schemas.cache.size = 1000
+	schemas.enable = true
+
+2026-02-03 15:09:00,329 [INFO] [main] org.apache.kafka.common.config.AbstractConfig (AbstractConfig.java:380) - JsonConverterConfig values: 
+	converter.type = value
+	decimal.format = BASE64
+	replace.null.with.default = true
+	schemas.cache.size = 1000
+	schemas.enable = true
+
+2026-02-03 15:09:00,358 [INFO] [main] org.apache.kafka.common.config.AbstractConfig (AbstractConfig.java:380) - EmbeddedWorkerConfig values: 
+	access.control.allow.methods = 
+	access.control.allow.origin = 
+	admin.listeners = null
+	bootstrap.servers = [localhost:9092]
+	client.dns.lookup = use_all_dns_ips
+	config.providers = []
+	connector.client.config.override.policy = All
+	header.converter = class org.apache.kafka.connect.storage.SimpleHeaderConverter
+	header.converter.plugin.version = null
+	key.converter = class org.apache.kafka.connect.json.JsonConverter
+	key.converter.plugin.version = null
+	listeners = [http://:8083]
+	metric.reporters = [org.apache.kafka.common.metrics.JmxReporter]
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	offset.flush.interval.ms = 60000
+	offset.flush.timeout.ms = 5000
+	offset.storage.file.filename = tmp\offsets\my-pipeline.dat
+	offset.storage.partitions = null
+	offset.storage.replication.factor = null
+	offset.storage.topic = 
+	plugin.discovery = hybrid_warn
+	plugin.path = null
+	response.http.headers.config = 
+	rest.advertised.host.name = null
+	rest.advertised.listener = null
+	rest.advertised.port = null
+	rest.extension.classes = []
+	ssl.cipher.suites = null
+	ssl.client.auth = none
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+	ssl.endpoint.identification.algorithm = https
+	ssl.engine.factory.class = null
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.certificate.chain = null
+	ssl.keystore.key = null
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLSv1.3
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.certificates = null
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	task.shutdown.graceful.timeout.ms = 5000
+	topic.creation.enable = true
+	topic.tracking.allow.reset = true
+	topic.tracking.enable = true
+	value.converter = class org.apache.kafka.connect.json.JsonConverter
+	value.converter.plugin.version = null
+
+2026-02-03 15:09:00,363 [INFO] [main] org.apache.kafka.common.config.AbstractConfig (AbstractConfig.java:380) - JsonConverterConfig values: 
+	converter.type = key
+	decimal.format = BASE64
+	replace.null.with.default = true
+	schemas.cache.size = 1000
+	schemas.enable = false
+
+2026-02-03 15:09:00,363 [INFO] [main] org.apache.kafka.common.config.AbstractConfig (AbstractConfig.java:380) - JsonConverterConfig values: 
+	converter.type = value
+	decimal.format = BASE64
+	replace.null.with.default = true
+	schemas.cache.size = 1000
+	schemas.enable = false
+
+2026-02-03 15:09:00,376 [INFO] [main] io.debezium.embedded.async.AsyncEmbeddedEngine (AsyncEmbeddedEngine.java:783) - Engine state has changed from 'CREATING' to 'INITIALIZING'
+2026-02-03 15:09:00,440 [INFO] [main] io.debezium.config.CommonConnectorConfig (CommonConnectorConfig.java:2186) - Loading the custom source info struct maker plugin: io.debezium.connector.postgresql.PostgresSourceInfoStructMaker
+2026-02-03 15:09:00,466 [INFO] [main] io.debezium.connector.postgresql.PostgresConnectorConfig (PostgresConnectorConfig.java:1688) - Using LSN flush mode 'connector': Debezium will flush LSN on event processing. The pgjdbc driver keepalive flush is DISABLED; consider using heartbeat.action.query to prevent WAL growth on low-activity databases.
+2026-02-03 15:09:00,466 [INFO] [main] io.debezium.connector.postgresql.PostgresConnectorConfig (PostgresConnectorConfig.java:1742) - Using offset mismatch strategy 'no_validation': Connector will not validate slot position and will attempt to stream from the stored offset. Slot recreation is not detected.
+2026-02-03 15:09:00,468 [INFO] [main] io.debezium.util.Threads (Threads.java:294) - Requested thread factory for component PostgresConnector, id = rosetta_my-pipeline named = connection-validation
+2026-02-03 15:09:00,470 [INFO] [main] io.debezium.util.Threads (Threads.java:311) - Creating thread debezium-postgresconnector-rosetta_my-pipeline-connection-validation
+2026-02-03 15:09:00,757 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-connection-validation] io.debezium.connector.postgresql.PostgresConnector (PostgresConnector.java:174) - Successfully tested connection for jdbc:postgresql://172.16.62.98:5455/postgres with user 'postgres'
+2026-02-03 15:09:00,793 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-connection-validation] io.debezium.util.Threads (Threads.java:294) - Requested thread factory for component JdbcConnection, id = JdbcConnection named = jdbc-connection-close
+2026-02-03 15:09:00,794 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-connection-validation] io.debezium.util.Threads (Threads.java:311) - Creating thread debezium-jdbcconnection-JdbcConnection-jdbc-connection-close
+2026-02-03 15:09:00,794 [INFO] [debezium-jdbcconnection-JdbcConnection-jdbc-connection-close] io.debezium.jdbc.JdbcConnection (JdbcConnection.java:980) - Connection gracefully closed
+2026-02-03 15:09:00,803 [INFO] [main] org.apache.kafka.common.config.AbstractConfig (AbstractConfig.java:380) - JsonConverterConfig values: 
+	converter.type = key
+	decimal.format = BASE64
+	replace.null.with.default = true
+	schemas.cache.size = 1000
+	schemas.enable = false
+
+2026-02-03 15:09:00,806 [INFO] [main] org.apache.kafka.connect.storage.FileOffsetBackingStore (FileOffsetBackingStore.java:64) - Starting FileOffsetBackingStore with file tmp\offsets\my-pipeline.dat
+2026-02-03 15:09:00,835 [INFO] [main] io.debezium.embedded.async.AsyncEmbeddedEngine (AsyncEmbeddedEngine.java:783) - Engine state has changed from 'INITIALIZING' to 'CREATING_TASKS'
+2026-02-03 15:09:00,844 [INFO] [main] io.debezium.embedded.async.AsyncEmbeddedEngine (AsyncEmbeddedEngine.java:783) - Engine state has changed from 'CREATING_TASKS' to 'STARTING_TASKS'
+2026-02-03 15:09:00,846 [INFO] [main] io.debezium.embedded.async.AsyncEmbeddedEngine (AsyncEmbeddedEngine.java:460) - Waiting max. for 40000 ms for individual source tasks to start.
+2026-02-03 15:09:00,848 [INFO] [pool-2-thread-1] io.debezium.config.CommonConnectorConfig (CommonConnectorConfig.java:2186) - Loading the custom source info struct maker plugin: io.debezium.connector.postgresql.PostgresSourceInfoStructMaker
+2026-02-03 15:09:00,850 [INFO] [pool-2-thread-1] io.debezium.connector.postgresql.PostgresConnectorConfig (PostgresConnectorConfig.java:1688) - Using LSN flush mode 'connector': Debezium will flush LSN on event processing. The pgjdbc driver keepalive flush is DISABLED; consider using heartbeat.action.query to prevent WAL growth on low-activity databases.
+2026-02-03 15:09:00,850 [INFO] [pool-2-thread-1] io.debezium.connector.postgresql.PostgresConnectorConfig (PostgresConnectorConfig.java:1742) - Using offset mismatch strategy 'no_validation': Connector will not validate slot position and will attempt to stream from the stored offset. Slot recreation is not detected.
+2026-02-03 15:09:00,857 [INFO] [pool-2-thread-1] io.debezium.openlineage.emitter.NoOpLineageEmitter (NoOpLineageEmitter.java:33) - You are using a no-op lineage emitter. If you want to emit open lineage event, please set 'openlineage.integration.enabled=true'
+2026-02-03 15:09:00,862 [INFO] [pool-2-thread-1] io.debezium.connector.common.BaseSourceTask (BaseSourceTask.java:264) - Starting PostgresConnectorTask with configuration:
+   connector.class = io.debezium.connector.postgresql.PostgresConnector
+   max.queue.size = 8192
+   slot.name = supabase_etl_apply_1
+   record.processing.shutdown.timeout.ms = 1000
+   publication.name = my_publication
+   schema.include.list = public
+   slot.max.retries = 6
+   record.processing.order = ORDERED
+   topic.prefix = rosetta_my-pipeline
+   slot.retry.delay.ms = 10000
+   offset.storage.file.filename = tmp\offsets\my-pipeline.dat
+   heartbeat.action.query = SELECT pg_logical_emit_message(false, 'heartbeat', now()::varchar)
+   poll.interval.ms = 500
+   record.processing.threads = 
+   errors.retry.delay.initial.ms = 300
+   value.converter = org.apache.kafka.connect.json.JsonConverter
+   key.converter = org.apache.kafka.connect.json.JsonConverter
+   database.dbname = postgres
+   database.user = postgres
+   offset.storage = org.apache.kafka.connect.storage.FileOffsetBackingStore
+   slot.drop.on.stop = false
+   offset.flush.timeout.ms = 5000
+   errors.retry.delay.max.ms = 10000
+   heartbeat.interval.ms = 10000
+   plugin.name = pgoutput
+   database.port = 5455
+   offset.flush.interval.ms = 60000
+   internal.task.management.timeout.ms = 40000
+   record.processing.with.serial.consumer = false
+   errors.max.retries = -1
+   database.hostname = 172.16.62.98
+   database.password = ********
+   name = my-pipeline
+   table.include.list = public.tbl_sales_stream_company
+   max.batch.size = 2048
+   snapshot.mode = no_data
+
+2026-02-03 15:09:00,863 [INFO] [pool-2-thread-1] io.debezium.config.CommonConnectorConfig (CommonConnectorConfig.java:2186) - Loading the custom source info struct maker plugin: io.debezium.connector.postgresql.PostgresSourceInfoStructMaker
+2026-02-03 15:09:00,864 [INFO] [pool-2-thread-1] io.debezium.connector.postgresql.PostgresConnectorConfig (PostgresConnectorConfig.java:1688) - Using LSN flush mode 'connector': Debezium will flush LSN on event processing. The pgjdbc driver keepalive flush is DISABLED; consider using heartbeat.action.query to prevent WAL growth on low-activity databases.
+2026-02-03 15:09:00,864 [INFO] [pool-2-thread-1] io.debezium.connector.postgresql.PostgresConnectorConfig (PostgresConnectorConfig.java:1742) - Using offset mismatch strategy 'no_validation': Connector will not validate slot position and will attempt to stream from the stored offset. Slot recreation is not detected.
+2026-02-03 15:09:00,865 [INFO] [pool-2-thread-1] io.debezium.config.CommonConnectorConfig (CommonConnectorConfig.java:1846) - Loading the custom topic naming strategy plugin: io.debezium.schema.SchemaTopicNamingStrategy
+2026-02-03 15:09:00,896 [INFO] [pool-2-thread-1] io.debezium.util.Threads (Threads.java:294) - Requested thread factory for component JdbcConnection, id = JdbcConnection named = jdbc-connection-close
+2026-02-03 15:09:00,897 [INFO] [pool-2-thread-1] io.debezium.util.Threads (Threads.java:311) - Creating thread debezium-jdbcconnection-JdbcConnection-jdbc-connection-close
+2026-02-03 15:09:00,899 [INFO] [debezium-jdbcconnection-JdbcConnection-jdbc-connection-close] io.debezium.jdbc.JdbcConnection (JdbcConnection.java:980) - Connection gracefully closed
+2026-02-03 15:09:00,971 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:13595, name:_pg_user_mappings] is already mapped
+2026-02-03 15:09:00,975 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:13269, name:cardinal_number] is already mapped
+2026-02-03 15:09:00,976 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:13272, name:character_data] is already mapped
+2026-02-03 15:09:00,976 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:13274, name:sql_identifier] is already mapped
+2026-02-03 15:09:00,976 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:13280, name:time_stamp] is already mapped
+2026-02-03 15:09:00,977 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:13282, name:yes_or_no] is already mapped
+2026-02-03 15:09:00,977 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:19151, name:topoelement] is already mapped
+2026-02-03 15:09:00,977 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:19156, name:topoelementarray] is already mapped
+2026-02-03 15:09:01,049 [INFO] [pool-2-thread-1] io.debezium.connector.common.BaseSourceTask (BaseSourceTask.java:602) - Found previous partition offset PostgresPartition [sourcePartition={server=rosetta_my-pipeline}]: {lsn_proc=2082547328, messageType=INSERT, lsn_commit=2082533096, lsn=2082547328, txId=980, ts_usec=1770105504306028}
+2026-02-03 15:09:01,124 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:13595, name:_pg_user_mappings] is already mapped
+2026-02-03 15:09:01,128 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:13269, name:cardinal_number] is already mapped
+2026-02-03 15:09:01,128 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:13272, name:character_data] is already mapped
+2026-02-03 15:09:01,129 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:13274, name:sql_identifier] is already mapped
+2026-02-03 15:09:01,129 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:13280, name:time_stamp] is already mapped
+2026-02-03 15:09:01,129 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:13282, name:yes_or_no] is already mapped
+2026-02-03 15:09:01,130 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:19151, name:topoelement] is already mapped
+2026-02-03 15:09:01,130 [WARN] [pool-2-thread-1] io.debezium.connector.postgresql.TypeRegistry (TypeRegistry.java:147) - Type [oid:19156, name:topoelementarray] is already mapped
+2026-02-03 15:09:01,144 [INFO] [pool-2-thread-1] io.debezium.connector.postgresql.PostgresConnectorTask (PostgresConnectorTask.java:174) - Guardrail validation skipped
+2026-02-03 15:09:01,161 [INFO] [pool-2-thread-1] io.debezium.connector.postgresql.connection.PostgresConnection (PostgresConnection.java:359) - Obtained valid replication slot ReplicationSlot [active=false, latestFlushedLsn=LSN{0/7C20EEE8}, catalogXmin=980]
+2026-02-03 15:09:01,164 [INFO] [pool-2-thread-1] io.debezium.connector.postgresql.connection.PostgresConnection (PostgresConnection.java:892) - Slot 'supabase_etl_apply_1' has restart LSN 'LSN{0/7C20EEE8}'
+2026-02-03 15:09:01,166 [INFO] [pool-2-thread-1] io.debezium.connector.postgresql.PostgresConnectorTask (PostgresConnectorTask.java:188) - Found previous offset PostgresOffsetContext [sourceInfoSchema=Schema{io.debezium.connector.postgresql.Source:STRUCT}, sourceInfo=source_info[server='rosetta_my-pipeline'db='postgres', lsn=LSN{0/7C212680}, txId=980, messageType=INSERT, lastCommitLsn=LSN{0/7C20EEE8}, timestamp=2026-02-03T07:58:24.306028Z, snapshot=FALSE, schema=, table=], lastSnapshotRecord=false, lastCompletelyProcessedLsn=LSN{0/7C212680}, lastCommitLsn=LSN{0/7C20EEE8}, streamingStoppingLsn=null, transactionContext=TransactionContext [currentTransactionId=null, perTableEventCount={}, totalEventCount=0], incrementalSnapshotContext=IncrementalSnapshotContext [windowOpened=false, chunkEndPosition=null, dataCollectionsToSnapshot=[], lastEventKeySent=null, maximumKey=null]]
+2026-02-03 15:09:01,189 [INFO] [pool-2-thread-1] io.debezium.connector.postgresql.PostgresConnectorTask (PostgresConnectorTask.java:329) - user 'postgres' connected to database 'postgres' on PostgreSQL 16.4 on x86_64-pc-linux-musl, compiled by gcc (Alpine 13.2.1_git20240309) 13.2.1 20240309, 64-bit with roles:
+	role 'pg_read_all_settings' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'pg_database_owner' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'pg_stat_scan_tables' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'pg_checkpoint' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'pg_write_server_files' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'pg_use_reserved_connections' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'pg_read_all_data' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'pg_write_all_data' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'pg_monitor' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'pg_read_server_files' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'pg_create_subscription' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'pg_execute_server_program' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'pg_read_all_stats' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'pg_signal_backend' [superuser: false, replication: false, inherit: true, create role: false, create db: false, can log in: false]
+	role 'postgres' [superuser: true, replication: true, inherit: true, create role: true, create db: true, can log in: true]
+2026-02-03 15:09:01,192 [INFO] [pool-2-thread-1] io.debezium.connector.postgresql.connection.PostgresConnection (PostgresConnection.java:359) - Obtained valid replication slot ReplicationSlot [active=false, latestFlushedLsn=LSN{0/7C20EEE8}, catalogXmin=980]
+2026-02-03 15:09:01,206 [INFO] [pool-2-thread-1] io.debezium.util.Threads (Threads.java:294) - Requested thread factory for component PostgresConnector, id = rosetta_my-pipeline named = SignalProcessor
+2026-02-03 15:09:01,214 [INFO] [pool-2-thread-1] io.debezium.config.CommonConnectorConfig (CommonConnectorConfig.java:1846) - Loading the custom topic naming strategy plugin: io.debezium.schema.SchemaTopicNamingStrategy
+2026-02-03 15:09:01,225 [INFO] [pool-2-thread-1] io.debezium.util.Threads (Threads.java:294) - Requested thread factory for component PostgresConnector, id = rosetta_my-pipeline named = change-event-source-coordinator
+2026-02-03 15:09:01,225 [INFO] [pool-2-thread-1] io.debezium.util.Threads (Threads.java:294) - Requested thread factory for component PostgresConnector, id = rosetta_my-pipeline named = blocking-snapshot
+2026-02-03 15:09:01,232 [INFO] [pool-2-thread-1] io.debezium.util.Threads (Threads.java:311) - Creating thread debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator
+2026-02-03 15:09:01,234 [INFO] [main] io.debezium.embedded.async.AsyncEmbeddedEngine (AsyncEmbeddedEngine.java:500) - All tasks have started successfully.
+2026-02-03 15:09:01,235 [INFO] [main] io.debezium.embedded.async.AsyncEmbeddedEngine (AsyncEmbeddedEngine.java:783) - Engine state has changed from 'STARTING_TASKS' to 'POLLING_TASKS'
+2026-02-03 15:09:01,235 [INFO] [main] io.debezium.embedded.async.AsyncEmbeddedEngine (AsyncEmbeddedEngine.java:562) - Using io.debezium.embedded.async.ParallelSmtAndConvertBatchProcessor processor
+2026-02-03 15:09:01,275 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.pipeline.ChangeEventSourceCoordinator (ChangeEventSourceCoordinator.java:138) - Metrics registered
+2026-02-03 15:09:01,277 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.pipeline.ChangeEventSourceCoordinator (ChangeEventSourceCoordinator.java:141) - Context created
+2026-02-03 15:09:01,284 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.PostgresSnapshotChangeEventSource (PostgresSnapshotChangeEventSource.java:77) - A previous offset indicating a completed snapshot has been found.
+2026-02-03 15:09:01,284 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.PostgresSnapshotChangeEventSource (PostgresSnapshotChangeEventSource.java:85) - According to the connector configuration no snapshot will be executed
+2026-02-03 15:09:01,286 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.pipeline.ChangeEventSourceCoordinator (ChangeEventSourceCoordinator.java:312) - Snapshot ended with SnapshotResult [status=SKIPPED, offset=PostgresOffsetContext [sourceInfoSchema=Schema{io.debezium.connector.postgresql.Source:STRUCT}, sourceInfo=source_info[server='rosetta_my-pipeline'db='postgres', lsn=LSN{0/7C212680}, txId=980, messageType=INSERT, lastCommitLsn=LSN{0/7C20EEE8}, timestamp=2026-02-03T07:58:24.306028Z, snapshot=FALSE, schema=, table=], lastSnapshotRecord=false, lastCompletelyProcessedLsn=LSN{0/7C212680}, lastCommitLsn=LSN{0/7C20EEE8}, streamingStoppingLsn=null, transactionContext=TransactionContext [currentTransactionId=null, perTableEventCount={}, totalEventCount=0], incrementalSnapshotContext=IncrementalSnapshotContext [windowOpened=false, chunkEndPosition=null, dataCollectionsToSnapshot=[], lastEventKeySent=null, maximumKey=null]]]
+2026-02-03 15:09:01,292 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.util.Threads (Threads.java:294) - Requested thread factory for component PostgresStreamingChangeEventSource, id = rosetta_my-pipeline named = lsn-flush
+2026-02-03 15:09:01,292 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.pipeline.ChangeEventSourceCoordinator (ChangeEventSourceCoordinator.java:505) - Connected metrics set to 'true'
+2026-02-03 15:09:01,353 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.PostgresSchema (PostgresSchema.java:107) - REPLICA IDENTITY for 'public.tbl_sales_stream_company' is 'DEFAULT'; UPDATE and DELETE events will contain previous values only for PK columns
+2026-02-03 15:09:01,377 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.pipeline.signal.SignalProcessor (SignalProcessor.java:116) - SignalProcessor started. Scheduling it every 5000ms
+2026-02-03 15:09:01,379 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.util.Threads (Threads.java:311) - Creating thread debezium-postgresconnector-rosetta_my-pipeline-SignalProcessor
+2026-02-03 15:09:01,380 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.pipeline.ChangeEventSourceCoordinator (ChangeEventSourceCoordinator.java:338) - Starting streaming
+2026-02-03 15:09:01,381 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.PostgresStreamingChangeEventSource (PostgresStreamingChangeEventSource.java:172) - Retrieved latest position from stored offset 'LSN{0/7C212680}'
+2026-02-03 15:09:01,382 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.connection.WalPositionLocator (WalPositionLocator.java:55) - Looking for WAL restart position for last commit LSN 'LSN{0/7C20EEE8}' and last change LSN 'LSN{0/7C212680}'
+2026-02-03 15:09:01,382 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.connection.PostgresReplicationConnection (PostgresReplicationConnection.java:219) - Initializing PgOutput logical decoder publication
+2026-02-03 15:09:01,437 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.connection.PostgresConnection (PostgresConnection.java:359) - Obtained valid replication slot ReplicationSlot [active=false, latestFlushedLsn=LSN{0/7C20EEE8}, catalogXmin=980]
+2026-02-03 15:09:01,438 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.util.Threads (Threads.java:294) - Requested thread factory for component JdbcConnection, id = JdbcConnection named = jdbc-connection-close
+2026-02-03 15:09:01,438 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.util.Threads (Threads.java:311) - Creating thread debezium-jdbcconnection-JdbcConnection-jdbc-connection-close
+2026-02-03 15:09:01,440 [INFO] [debezium-jdbcconnection-JdbcConnection-jdbc-connection-close] io.debezium.jdbc.JdbcConnection (JdbcConnection.java:980) - Connection gracefully closed
+2026-02-03 15:09:01,443 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.connection.PostgresReplicationConnection (PostgresReplicationConnection.java:1071) - Starting replication stream from LSN LSN{0/7C212680} with automaticFlush=false (mode=CONNECTOR)
+2026-02-03 15:09:01,474 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.util.Threads (Threads.java:294) - Requested thread factory for component PostgresConnector, id = rosetta_my-pipeline named = keep-alive
+2026-02-03 15:09:01,475 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.util.Threads (Threads.java:311) - Creating thread debezium-postgresconnector-rosetta_my-pipeline-keep-alive
+2026-02-03 15:09:01,481 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.PostgresStreamingChangeEventSource (PostgresStreamingChangeEventSource.java:407) - Searching for WAL resume position
+2026-02-03 15:09:01,483 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.connection.WalPositionLocator (WalPositionLocator.java:78) - First LSN 'LSN{0/7C20F1C0}' received
+2026-02-03 15:09:01,515 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.connection.WalPositionLocator (WalPositionLocator.java:96) - LSN after last stored change LSN 'LSN{0/7C212A90}' received
+2026-02-03 15:09:01,516 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.PostgresStreamingChangeEventSource (PostgresStreamingChangeEventSource.java:429) - WAL resume position 'LSN{0/7C212A90}' discovered
+2026-02-03 15:09:01,518 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.util.Threads (Threads.java:294) - Requested thread factory for component JdbcConnection, id = JdbcConnection named = jdbc-connection-close
+2026-02-03 15:09:01,518 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.util.Threads (Threads.java:311) - Creating thread debezium-jdbcconnection-JdbcConnection-jdbc-connection-close
+2026-02-03 15:09:01,519 [INFO] [debezium-jdbcconnection-JdbcConnection-jdbc-connection-close] io.debezium.jdbc.JdbcConnection (JdbcConnection.java:980) - Connection gracefully closed
+2026-02-03 15:09:01,519 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.util.Threads (Threads.java:294) - Requested thread factory for component JdbcConnection, id = JdbcConnection named = jdbc-connection-close
+2026-02-03 15:09:01,520 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.util.Threads (Threads.java:311) - Creating thread debezium-jdbcconnection-JdbcConnection-jdbc-connection-close
+2026-02-03 15:09:01,521 [INFO] [debezium-jdbcconnection-JdbcConnection-jdbc-connection-close] io.debezium.jdbc.JdbcConnection (JdbcConnection.java:980) - Connection gracefully closed
+2026-02-03 15:09:01,537 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.connection.PostgresReplicationConnection (PostgresReplicationConnection.java:219) - Initializing PgOutput logical decoder publication
+2026-02-03 15:09:01,556 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.connection.PostgresReplicationConnection (PostgresReplicationConnection.java:1071) - Starting replication stream from LSN LSN{0/7C212680} with automaticFlush=false (mode=CONNECTOR)
+2026-02-03 15:09:01,582 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.util.Threads (Threads.java:294) - Requested thread factory for component PostgresConnector, id = rosetta_my-pipeline named = keep-alive
+2026-02-03 15:09:01,582 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.util.Threads (Threads.java:311) - Creating thread debezium-postgresconnector-rosetta_my-pipeline-keep-alive
+2026-02-03 15:09:01,584 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.PostgresStreamingChangeEventSource (PostgresStreamingChangeEventSource.java:255) - Processing messages
+2026-02-03 15:09:01,634 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.connection.AbstractMessageDecoder (AbstractMessageDecoder.java:54) - Streaming requested from LSN LSN{0/7C212680}, received LSN LSN{0/7C20F1C0} identified as already processed
+2026-02-03 15:09:01,707 [INFO] [debezium-postgresconnector-rosetta_my-pipeline-change-event-source-coordinator] io.debezium.connector.postgresql.connection.WalPositionLocator (WalPositionLocator.java:159) - Message with LSN 'LSN{0/7C212A90}' arrived, switching off the filtering
+2026-02-03 15:09:01,776 [INFO] [pool-2-thread-1] io.debezium.util.Threads (Threads.java:311) - Creating thread debezium-postgresstreamingchangeeventsource-rosetta_my-pipeline-lsn-flush
+2026-02-03 15:09:11,560 [INFO] [pool-2-thread-1] io.debezium.connector.common.BaseSourceTask (BaseSourceTask.java:380) - 12 records sent during previous 00:00:10.717, last recorded offset of {server=rosetta_my-pipeline} partition is {lsn_proc=2082554208, messageType=COMMIT, lsn_commit=2082554208, lsn=2082554208, txId=981, ts_usec=1770105572901206}
+2026-02-03 15:09:22,198 [INFO] [pool-2-thread-1] io.debezium.connector.common.BaseSourceTask (BaseSourceTask.java:380) - 2 records sent during previous 00:00:10.638, last recorded offset of {server=rosetta_my-pipeline} partition is {lsn_proc=2082554304, messageType=MESSAGE, lsn_commit=2082554304, lsn=2082554304, ts_usec=1770105572901206}
+2026-02-03 15:09:31,137 [INFO] [main] io.debezium.embedded.async.AsyncEmbeddedEngine (AsyncEmbeddedEngine.java:541) - Task interrupted while polling.
