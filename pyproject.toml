@@ -1,0 +1,26 @@
+[project]
+name = "rosetta-compute"
+version = "0.1.0"
+description = "Modular Debezium-based CDC engine for data streaming"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "jpype1>=1.6.0",
+    'pydbzengine @git+https://github.com/memiiso/pydbzengine.git',
+    "psycopg2-binary>=2.9.9",
+    "duckdb>=0.10.0",
+    "python-dotenv>=1.0.0",
+    "cryptography==42.0.0",
+]
+
+[project.optional-dependencies]
+snowflake = [
+    "snowflake-ingest>=0.1.0",
+]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+]
+
+[project.scripts]
+rosetta-compute = "compute.main:main"
