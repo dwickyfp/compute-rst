@@ -23,4 +23,4 @@ dev = [
 ]
 
 [project.scripts]
-rosetta-compute = "compute.main:main"
+rosetta-compute = "python -m compute.main"

@@ -594,7 +594,7 @@ class PostgreSQLDestination(BaseDestination):
                 if pg_type in ('real', 'float4'): return 'FLOAT'
                 if pg_type in ('double precision', 'float8', 'numeric', 'decimal'): return 'DOUBLE'
                 # Store complex types as VARCHAR - PostgreSQL will handle implicit conversion
-                if pg_type in ('json', 'jsonb'): return 'JSON'  # DuckDB has JSON type
+                if pg_type in ('json', 'jsonb'): return 'json'  # DuckDB has JSON type
                 if pg_type == 'text[]': return 'VARCHAR[]'  # Array of text
                 if pg_type == 'integer[]': return 'INTEGER[]'  # Array of integers
                 if '[]' in pg_type: return 'VARCHAR[]'  
@@ -624,33 +624,97 @@ class PostgreSQLDestination(BaseDestination):
                 )
             
             
-            # Build MERGE INTO statement
+            # Build DELETE + INSERT pattern instead of MERGE INTO
+            # DuckDB's postgres_scanner strips type casts when translating MERGE to UPDATE,
+            # causing type mismatch errors. DELETE+INSERT with explicit casts is more reliable.
+            
             full_table = f"pg_dest.{self.schema}.{target_table}"
             
-            # Join condition on key columns
-            join_conditions = " AND ".join([
-                f'target."{k}" = source."{k}"' for k in key_columns
-            ])
+            # Helper to get valid PG cast type compatible with DuckDB parser
+            def get_pg_cast_type(c):
+                col_info = table_schema.get(c, {'type': 'text'})
+                pg_type = col_info.get('type', 'text')
+                udt_name = col_info.get('udt_name')
+                
+                # Handle arrays: Map internal names like _text to TEXT[] for DuckDB
+                if pg_type == 'array' and udt_name:
+                    if udt_name.startswith('_'):
+                        inner = udt_name[1:]
+                        if inner == 'text': return 'TEXT[]'
+                        if inner == 'varchar' or inner == 'bpchar': return 'VARCHAR[]'
+                        if inner == 'int2': return 'SMALLINT[]'
+                        if inner == 'int4': return 'INTEGER[]'
+                        if inner == 'int8': return 'BIGINT[]'
+                        if inner == 'float4': return 'FLOAT[]'
+                        if inner == 'float8': return 'DOUBLE[]'
+                        if inner == 'bool': return 'BOOLEAN[]'
+                        return f"{inner}[]"
+                    return 'VARCHAR[]'
+                
+                # Handle JSONB/JSON
+                if pg_type in ('json', 'jsonb'):
+                    return 'JSON'
+                
+                # Handle Geospatial types (map to VARCHAR for DuckDB compatibility)
+                if pg_type in ('geography', 'geometry', 'point', 'polygon', 'linestring'):
+                    return 'VARCHAR'
+                
+                # Use base type for others
+                return pg_type
+
+            # 1. DELETE existing rows that match keys
+            if key_columns:
+                pk_conditions = " AND ".join([
+                    f'target."{k}" = source."{k}"' for k in key_columns
+                ])
+                
+                # DuckDB doesn't support DELETE ... FROM ... USING directly for Postgres attached tables
+                # We use a subquery with IN or a JOIN-like condition if possible, 
+                # but the most reliable way in DuckDB for this is a combined DELETE via the scanner
+                
+                # However, for simplicity and reliability with common PKs (like a single ID):
+                if len(key_columns) == 1:
+                    k = key_columns[0]
+                    # Get the right PG type for casting in the subquery
+                    cast_type = get_pg_cast_type(k)
+                    
+                    delete_sql = f"""
+                        DELETE FROM {full_table} 
+                        WHERE "{k}" IN (SELECT "{k}"::{cast_type} FROM {temp_source})
+                    """
+                else:
+                    # Multiple PKs - use tuple comparison (supported by PG)
+                    pk_list = ", ".join([f'"{k}"' for k in key_columns])
+                    
+                    # Construct casted select list for DuckDB
+                    select_pks = ", ".join([
+                        f'"{k}"::{get_pg_cast_type(k)}' 
+                        for k in key_columns
+                    ])
+                    
+                    delete_sql = f"""
+                        DELETE FROM {full_table}
+                        WHERE ({pk_list}) IN (SELECT {select_pks} FROM {temp_source})
+                    """
+                
+                self._logger.debug(f"Executing DELETE: {delete_sql}")
+                self._duckdb_conn.execute(delete_sql)
             
-            # Update columns (excluding keys)
-            update_cols = [c for c in columns if c not in key_columns]
-            update_set = ", ".join([
-                f'"{c}" = source."{c}"' for c in update_cols
-            ])
-            
-            # Insert columns
+            # 2. INSERT new records
             insert_cols = ", ".join([f'"{c}"' for c in columns])
-            insert_vals = ", ".join([f'source."{c}"' for c in columns])
             
-            merge_sql = f"""
-                MERGE INTO {full_table} AS target
-                USING {temp_source} AS source
-                ON {join_conditions}
-                WHEN MATCHED THEN UPDATE SET {update_set}
-                WHEN NOT MATCHED THEN INSERT ({insert_cols}) VALUES ({insert_vals})
+            # Construct SELECT with explicit casts to original PG types
+            select_list = ", ".join([
+                f'"{c}"::{get_pg_cast_type(c)}' for c in columns
+            ])
+            
+            insert_sql = f"""
+                INSERT INTO {full_table} ({insert_cols})
+                SELECT {select_list} FROM {temp_source}
             """
             
-            self._duckdb_conn.execute(merge_sql)
+            self._logger.debug(f"Executing INSERT: {insert_sql}")
+            self._duckdb_conn.execute(insert_sql)
             
             # Cleanup
             self._duckdb_conn.execute(f"DROP TABLE IF EXISTS {temp_source}")
@@ -658,8 +722,8 @@ class PostgreSQLDestination(BaseDestination):
             return len(records)
             
         except Exception as e:
-            self._logger.error(f"MERGE INTO failed: {e}")
-            raise DestinationException(f"MERGE INTO failed: {e}")
+            self._logger.error(f"PostgreSQL sync failed: {e}")
+            raise DestinationException(f"PostgreSQL sync failed: {e}")
     
     def write_batch(
         self,
