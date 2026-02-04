@@ -23,19 +23,19 @@ from compute.core.engine import run_pipeline
 def setup_logging() -> None:
     """Configure logging based on environment and config."""
     config = get_config()
-    
+
     # Check for DEBUG environment variable
     debug = os.getenv("DEBUG", "false").lower() in ("true", "1", "yes")
     level = logging.DEBUG if debug else getattr(logging, config.logging.level.upper())
-    
+
     logging.basicConfig(
         level=level,
         format=config.logging.format,
         handlers=[
             logging.StreamHandler(sys.stdout),
-        ]
+        ],
     )
-    
+
     # Reduce noise from some libraries
     logging.getLogger("jpype").setLevel(logging.WARNING)
     logging.getLogger("urllib3").setLevel(logging.WARNING)
@@ -47,17 +47,15 @@ def main() -> int:
     setup_logging()
     logger = logging.getLogger(__name__)
     init_connection_pool()
-    
+
     try:
-        logger.info("Starting pipeline manager")
+        logger.info("Starting Rosetta Compute Engine")
+        logger.info("Press Ctrl+C to shutdown gracefully")
         manager = PipelineManager()
         manager.run()
-        
+        logger.info("Shutdown complete")
         return 0
-        
-    except KeyboardInterrupt:
-        logger.info("Received shutdown signal")
-        return 0
+
     except Exception as e:
         logger.error(f"Fatal error: {e}", exc_info=True)
         return 1
