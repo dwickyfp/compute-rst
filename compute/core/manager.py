@@ -37,7 +37,7 @@ class PipelineProcess:
         return self.process is not None and self.process.is_alive()
 
 
-def _run_pipeline_process(pipeline_id: int, stop_event: Event) -> None:
+def _run_pipeline_process(pipeline_id: int, stop_event: EventClass) -> None:
     """
     Worker function for running a pipeline in a separate process.
 
@@ -204,7 +204,7 @@ class PipelineManager:
             pipeline_proc.process.join(timeout=5.0)
 
         # Update metadata status
-        PipelineMetadataRepository.upsert(pipeline_id, "STOPPED")
+        PipelineMetadataRepository.upsert(pipeline_id, "PAUSED")
 
         self._cleanup_process(pipeline_id)
         self._logger.info(f"Stopped pipeline {pipeline_id}")
