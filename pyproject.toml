@@ -11,13 +11,9 @@ dependencies = [
     "duckdb>=0.10.0",
     "python-dotenv>=1.0.0",
     "cryptography==42.0.0",
-    "snowpipe-streaming>=1.1.2",
 ]
 
 [project.optional-dependencies]
-snowflake = [
-    "snowpipe-streaming>=1.1.2",
-]
 dev = [
     "pytest>=7.0.0",
     "pytest-cov>=4.0.0",

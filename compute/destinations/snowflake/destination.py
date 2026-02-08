@@ -24,9 +24,6 @@ logger = logging.getLogger(__name__)
 class SnowflakeDestination(BaseDestination):
     """
     Snowflake destination using native Snowpipe Streaming REST API.
-
-    Provides low-latency data ingestion via streaming channels without
-    requiring the snowpipe-streaming SDK.
     """
 
     # Required config keys
@@ -408,20 +405,46 @@ class SnowflakeDestination(BaseDestination):
         # Convert records to rows
         rows = [self._convert_record_to_row(record) for record in records]
         
+        # Filter out rows where all data values are null (excluding metadata fields)
+        metadata_fields = {"OPERATION", "SYNC_TIMESTAMP_ROSETTA"}
+        valid_rows = []
+        skipped_count = 0
+        for row in rows:
+            # Check if any non-metadata field has a non-null value
+            has_data = any(
+                v is not None 
+                for k, v in row.items() 
+                if k not in metadata_fields
+            )
+            if has_data:
+                valid_rows.append(row)
+            else:
+                skipped_count += 1
+        
+        if skipped_count > 0:
+            self._logger.warning(
+                f"Skipped {skipped_count} rows with all null values for {landing_table}"
+            )
+        
+        # If no valid rows remain, return early
+        if not valid_rows:
+            self._logger.info(f"No valid rows to write to {landing_table} (all rows had null values)")
+            return 0
+        
         # Insert rows
         try:
             next_token = await self._client.insert_rows(
                 landing_table,
                 "default",
-                rows,
+                valid_rows,
                 self._channel_tokens.get(landing_table),
             )
             
             # Update state on success
             self._channel_tokens[landing_table] = next_token
 
-            self._logger.debug(f"Successfully wrote {len(rows)} rows to {landing_table}")
-            return len(rows)
+            self._logger.debug(f"Successfully wrote {len(valid_rows)} rows to {landing_table}")
+            return len(valid_rows)
 
         except Exception as e:
             self._logger.error(f"Failed to write to {landing_table}: {e}")

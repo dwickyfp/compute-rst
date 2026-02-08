@@ -832,7 +832,30 @@ class PostgreSQLDestination(BaseDestination):
         else:
             transformed = [r.value for r in filtered_records]
 
+        # Validation: Filter out rows where all values are None
+        # This prevents inserting empty rows
+        valid_rows = []
+        skipped_count = 0
+        for row in transformed:
+            # Check if any value in the row is not None
+            if any(v is not None for v in row.values()):
+                valid_rows.append(row)
+            else:
+                skipped_count += 1
+        
+        if skipped_count > 0:
+            self._logger.warning(
+                f"Skipped {skipped_count} rows with all null values for {target_table}"
+            )
+            
+        if not valid_rows:
+            self._logger.info(f"No valid rows to write to {target_table} (all rows had null values)")
+            return 0
+            
+        transformed = valid_rows
+
         # Get primary key columns from first record
+        # Note: We use original records for PK info, assuming transformations preserve PKs
         key_columns = self._get_primary_key_columns(filtered_records[0])
 
         # Step 3: MERGE INTO destination
