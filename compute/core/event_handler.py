@@ -66,7 +66,11 @@ class CDCEventHandler(BasePythonChangeHandler):
 
     def _build_routing_table(self) -> None:
         """Build routing table from pipeline configuration."""
+        self._logger.info(f"Building routing table for pipeline {self._pipeline.name}")
+        self._logger.info(f"Pipeline has {len(self._pipeline.destinations)} destination(s)")
+        
         for pd in self._pipeline.destinations:
+            self._logger.info(f"Processing pipeline_destination {pd.id} -> destination_id {pd.destination_id}")
             destination = self._destinations.get(pd.destination_id)
             if not destination:
                 self._logger.warning(
@@ -74,8 +78,10 @@ class CDCEventHandler(BasePythonChangeHandler):
                 )
                 continue
 
+            self._logger.info(f"Destination {pd.destination_id} has {len(pd.table_syncs)} table_sync(s)")
             for table_sync in pd.table_syncs:
                 table_name = table_sync.table_name
+                self._logger.info(f"  Adding routing for table: '{table_name}' -> target: '{table_sync.table_name_target}'")
 
                 if table_name not in self._routing_table:
                     self._routing_table[table_name] = []
@@ -88,7 +94,7 @@ class CDCEventHandler(BasePythonChangeHandler):
                     )
                 )
 
-        self._logger.info(f"Built routing table with {len(self._routing_table)} tables")
+        self._logger.info(f"Built routing table with {len(self._routing_table)} tables: {list(self._routing_table.keys())}")
 
     def _parse_destination_to_table_name(self, destination: str) -> str:
         """
@@ -209,19 +215,46 @@ class CDCEventHandler(BasePythonChangeHandler):
 
         # Group records by table
         records_by_table: dict[str, list[CDCRecord]] = {}
+        skipped_count = 0
+        ops_seen = []
 
         for record in records:
             cdc_record = self._parse_record(record)
             if cdc_record is None:
+                skipped_count += 1
+                # Log what's being skipped for debugging
+                try:
+                    value_data = record.value()
+                    dest_data = record.destination()
+                    if value_data:
+                        value_obj = json.loads(str(value_data))
+                        op = value_obj.get("payload", {}).get("op", "unknown")
+                        ops_seen.append(op)
+                        if op == "unknown":
+                            # Log full structure to understand the format
+                            self._logger.info(
+                                f"Unknown op record - destination: {dest_data}, "
+                                f"payload keys: {list(value_obj.get('payload', {}).keys())}, "
+                                f"full payload: {value_obj.get('payload', {})}"
+                            )
+                    else:
+                        ops_seen.append("empty_value")
+                except Exception as parse_ex:
+                    ops_seen.append(f"parse_error:{parse_ex}")
                 continue
 
             table_name = cdc_record.table_name
+            ops_seen.append(cdc_record.operation)
             if table_name not in records_by_table:
                 records_by_table[table_name] = []
             records_by_table[table_name].append(cdc_record)
 
         self._logger.info(
-            f"Grouped into {len(records_by_table)} tables: {list(records_by_table.keys())}"
+            f"Grouped into {len(records_by_table)} tables: {list(records_by_table.keys())} "
+            f"(skipped: {skipped_count}, ops: {ops_seen})"
+        )
+        self._logger.info(
+            f"Routing table has {len(self._routing_table)} tables: {list(self._routing_table.keys())}"
         )
 
         # Process each table's records

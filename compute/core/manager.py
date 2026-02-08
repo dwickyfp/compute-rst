@@ -47,6 +47,22 @@ def _run_pipeline_process(pipeline_id: int, stop_event: EventClass) -> None:
         pipeline_id: Pipeline ID to run
         stop_event: Event to signal stop
     """
+    # Configure logging for subprocess - CRITICAL: parent logging is not inherited
+    import sys
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        handlers=[logging.StreamHandler(sys.stdout)],
+        force=True,  # Override any existing config
+    )
+    # Reduce noise from some libraries
+    logging.getLogger("jpype").setLevel(logging.WARNING)
+    logging.getLogger("urllib3").setLevel(logging.WARNING)
+    logging.getLogger("httpx").setLevel(logging.WARNING)
+    
+    subprocess_logger = logging.getLogger(f"Pipeline_{pipeline_id}")
+    subprocess_logger.info(f"Subprocess started for pipeline {pipeline_id}")
+    
     # Initialize database connection pool for this process
     init_connection_pool(min_conn=1, max_conn=5)
 
