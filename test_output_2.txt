@@ -1,0 +1,4 @@
+DEBUG: initialize called. _is_initialized=False
+DEBUG: _start_background_loop called. loop=None
+DEBUG: Created new loop: <_UnixSelectorEventLoop running=False closed=False debug=False>
+DEBUG: Submitting _initialize_async to loop <_UnixSelectorEventLoop running=True closed=False debug=False>

@@ -7,6 +7,8 @@ without external SDK dependencies.
 
 import asyncio
 import logging
+import threading
+from concurrent.futures import Future
 from datetime import datetime, timezone
 from typing import Any, Optional
 
@@ -41,6 +43,10 @@ class SnowflakeDestination(BaseDestination):
         self._client: Optional[SnowpipeClient] = None
         self._channel_tokens: dict[str, str] = {}  # table_name -> continuation_token
         self._validate_config()
+        
+        # Background event loop for async operations
+        self._loop: Optional[asyncio.AbstractEventLoop] = None
+        self._thread: Optional[threading.Thread] = None
 
     def _validate_config(self) -> None:
         """Validate required configuration keys."""
@@ -118,10 +124,29 @@ class SnowflakeDestination(BaseDestination):
             return decrypt_value(cfg["private_key_passphrase"])
         return None
 
-    def initialize(self) -> None:
-        """Initialize Snowpipe Streaming destination."""
-        if self._is_initialized:
+    def _start_background_loop(self) -> None:
+        """Start background thread with event loop."""
+        if self._loop is not None and self._thread is not None and self._thread.is_alive():
             return
+
+        def run_loop(loop: asyncio.AbstractEventLoop):
+             asyncio.set_event_loop(loop)
+             loop.run_forever()
+
+        self._loop = asyncio.new_event_loop()
+        self._thread = threading.Thread(
+            target=run_loop, 
+            args=(self._loop,), 
+            daemon=True,
+            name=f"SnowflakeDestination-{self._config.id}"
+        )
+        self._thread.start()
+        self._logger.info(f"Started background loop for Snowflake destination {self._config.id}")
+
+    async def _initialize_async(self) -> None:
+        """Initialize client in background loop."""
+        if self._client is not None:
+             return
 
         try:
             private_key = self._get_private_key_content()
@@ -138,7 +163,9 @@ class SnowflakeDestination(BaseDestination):
                 landing_schema=self.landing_schema,
                 passphrase=passphrase,
             )
-
+            # Authenticate immediately to verify config
+            await self._client.authenticate()
+            
             self._is_initialized = True
             self._logger.info(f"Snowflake destination initialized: {self._config.name}")
 
@@ -147,6 +174,21 @@ class SnowflakeDestination(BaseDestination):
                 f"Failed to initialize Snowflake destination: {e}",
                 {"destination_id": self._config.id},
             )
+
+    def initialize(self) -> None:
+        """Initialize Snowpipe Streaming destination."""
+        if self._is_initialized:
+            return
+
+        self._start_background_loop()
+        
+        # Run initialization in background loop
+        future = asyncio.run_coroutine_threadsafe(self._initialize_async(), self._loop)
+        try:
+            future.result(timeout=30)
+        except Exception as e:
+             self._logger.error(f"Initialization failed: {e}")
+             raise
 
     def _convert_record_to_row(self, record: CDCRecord) -> dict[str, Any]:
         """
@@ -166,22 +208,52 @@ class SnowflakeDestination(BaseDestination):
             operation = "c"
 
         # Build schema map if available
+        # Debezium schema structure:
+        # {
+        #   "type": "struct",
+        #   "fields": [
+        #     {"field": "before", "type": "struct", "fields": [...]},
+        #     {"field": "after", "type": "struct", "fields": [...column definitions...]},
+        #     {"field": "source", ...},
+        #     {"field": "op", ...}
+        #   ]
+        # }
+        # We need to extract fields from "after" (or "before" for deletes)
         schema_map = {}
         if record.schema and "fields" in record.schema:
             try:
-                # Debezium structure: schema -> fields (list) -> field (dict)
-                # Field dict usually has "field" (name) and "name" (type name like io.debezium.time.Date)
+                target_field = "before" if record.is_delete else "after"
                 for field in record.schema["fields"]:
-                    if "field" in field:
-                        schema_map[field["field"]] = field
-            except Exception:
-                pass
+                    field_name = field.get("field")
+                    
+                    # Found the after/before field - extract its nested fields
+                    if field_name == target_field and "fields" in field:
+                        for col_field in field["fields"]:
+                            if "field" in col_field:
+                                schema_map[col_field["field"]] = col_field
+                        break
+                    # Fallback: direct field mapping (simpler schema structure)
+                    elif field_name and field_name not in ("before", "after", "source", "op", "ts_ms", "transaction"):
+                        schema_map[field_name] = field
+                        
+            except Exception as e:
+                self._logger.warning(f"Failed to parse schema: {e}")
 
         # Build row with uppercase column names and type conversion
         row = {}
         for k, v in record.value.items():
             field_schema = schema_map.get(k)
-            row[k.upper()] = self._convert_value_for_snowflake(v, field_schema)
+            converted = self._convert_value_for_snowflake(v, field_schema)
+            row[k.upper()] = converted
+            
+            # Debug logging for type conversions
+            if field_schema:
+                type_name = field_schema.get("name", "unknown")
+                if type_name != "unknown":
+                    self._logger.debug(
+                        f"Converted {k}: {type(v).__name__}({v}) -> {type(converted).__name__}({converted}) "
+                        f"[schema: {type_name}]"
+                    )
         
         row["OPERATION"] = operation
         row["SYNC_TIMESTAMP_ROSETTA"] = datetime.now(timezone.utc).isoformat()
@@ -192,92 +264,117 @@ class SnowflakeDestination(BaseDestination):
         """
         Convert a value to be compatible with Snowflake using schema metadata.
         
-        Handles:
+        Matches Rust implementation's cell_to_json_value() approach:
         - Decimals (Base64 encoded bytes) -> Decimal/float/string
         - Date (int32 epoch days) -> 'YYYY-MM-DD'
-        - Timestamp (int64 epoch micros) -> ISO format
-        - JSON/Array strings -> parsed JSON object/list
-        - Geospatial types -> WKT/GeoJSON string
+        - Timestamp (int64 epoch micros/nanos) -> ISO format
+        - ZonedTimestamp (string) -> pass through
+        - Time (int64 micros) -> 'HH:MM:SS.ffffff'
+        - UUID (string) -> pass through
+        - JSON/Array -> native Python types
         """
         import json
         import base64
         import decimal
-        from datetime import date, timedelta
+        from datetime import date, timedelta, time as dt_time
         
         if value is None:
             return None
-            
-        # 1. Use Schema Metadata if available
+        
+        # 1. Use Schema Metadata if available (Debezium provides type hints)
         if field_schema:
             type_name = field_schema.get("name")
             
-            # DECIMAL Handling
+            # DECIMAL Handling (org.apache.kafka.connect.data.Decimal)
+            # Debezium sends as Base64-encoded big-endian signed integer
             if type_name == "org.apache.kafka.connect.data.Decimal":
                 if isinstance(value, str):
-                    # Likely Base64 encoded unscaled value if coming as string from JSON
                     try:
-                        # Decode Base64
                         decoded = base64.b64decode(value)
-                        # Convert bytes to int (big endian, signed)
                         unscaled = int.from_bytes(decoded, byteorder='big', signed=True)
-                        # Get scale from parameters
                         scale = int(field_schema.get("parameters", {}).get("scale", 0))
-                        # Create Decimal
-                        from decimal import Context
                         d = decimal.Decimal(unscaled) / (decimal.Decimal(10) ** scale)
-                        return float(d) # Snowflake prefers float/string for numeric in JSON
-                    except Exception:
-                        pass # Fallback to default handling
-                elif isinstance(value, bytes):
-                    # Raw bytes handling
-                    try:
-                         unscaled = int.from_bytes(value, byteorder='big', signed=True)
-                         scale = int(field_schema.get("parameters", {}).get("scale", 0))
-                         d = decimal.Decimal(unscaled) / (decimal.Decimal(10) ** scale)
-                         return float(d)
+                        # Return as string for Snowflake NUMERIC precision
+                        return str(d)
                     except Exception:
                         pass
-
+                elif isinstance(value, (int, float)):
+                    # Already numeric, return as-is
+                    return value
+            
             # DATE Handling (io.debezium.time.Date -> int32 days since epoch)
             if type_name == "io.debezium.time.Date":
                 if isinstance(value, int):
                     return (date(1970, 1, 1) + timedelta(days=value)).isoformat()
+                elif isinstance(value, str):
+                    # Already ISO format string
+                    return value
             
-            # TIMESTAMP Handling (MicroTimestamp -> int64 micros since epoch)
+            # TIMESTAMP Handling - Multiple Debezium types
+            # MicroTimestamp: int64 microseconds since epoch UTC
             if type_name == "io.debezium.time.MicroTimestamp":
-                 if isinstance(value, int):
-                     return datetime.fromtimestamp(value / 1_000_000, tz=timezone.utc).isoformat()
-
-            # JSON/ARRAY Handling
-            # If value is string but schema says it's an Array or Struct, unlikely but possible
-            # Debezium usually sends arrays as lists in JSON.
+                if isinstance(value, int):
+                    return datetime.fromtimestamp(value / 1_000_000, tz=timezone.utc).isoformat()
+            
+            # NanoTimestamp: int64 nanoseconds since epoch UTC
+            if type_name == "io.debezium.time.NanoTimestamp":
+                if isinstance(value, int):
+                    return datetime.fromtimestamp(value / 1_000_000_000, tz=timezone.utc).isoformat()
+            
+            # Timestamp (without timezone): int64 milliseconds since epoch
+            if type_name == "io.debezium.time.Timestamp":
+                if isinstance(value, int):
+                    return datetime.fromtimestamp(value / 1_000, tz=timezone.utc).isoformat()
+            
+            # ZonedTimestamp: Already ISO-8601 string with timezone
+            if type_name == "io.debezium.time.ZonedTimestamp":
+                # Pass through as-is (already formatted correctly)
+                return value
+            
+            # TIME Handling
+            # MicroTime: int64 microseconds since midnight
+            if type_name == "io.debezium.time.MicroTime":
+                if isinstance(value, int):
+                    total_seconds = value / 1_000_000
+                    hours = int(total_seconds // 3600)
+                    minutes = int((total_seconds % 3600) // 60)
+                    seconds = int(total_seconds % 60)
+                    microseconds = value % 1_000_000
+                    return dt_time(hours, minutes, seconds, microseconds).isoformat()
+            
+            # NanoTime: int64 nanoseconds since midnight
+            if type_name == "io.debezium.time.NanoTime":
+                if isinstance(value, int):
+                    total_micros = value // 1000
+                    total_seconds = total_micros / 1_000_000
+                    hours = int(total_seconds // 3600)
+                    minutes = int((total_seconds % 3600) // 60)
+                    seconds = int(total_seconds % 60)
+                    microseconds = total_micros % 1_000_000
+                    return dt_time(hours, minutes, seconds, microseconds).isoformat()
         
-        # 2. General Type Handling (Fallback or where schema is missing/generic)
+        # 2. General Type Handling (Fallback for missing schema)
         
-        # Handle dict (could be geospatial GeoJSON/WKT or nested object)
+        # Handle dict (nested object, geospatial GeoJSON/WKT)
         if isinstance(value, dict):
-            # Complex types for Snowflake VARIANT/GEOGRAPHY should be JSON strings
+            # Complex types for Snowflake VARIANT should be JSON strings
             return json.dumps(value)
         
         # Handle list (Array type)
         if isinstance(value, list):
-            # Snowflake ARRAY column needs JSON string or list structure
-            # For streaming, list structure is usually fine, but let's be consistent
-            # If we return list, Python SDK/Connector handles it.
-            return value 
-            
-        # Handle bytes (could be WKB geospatial or binary data)
+            # Return list directly - Snowflake handles it
+            return value
+        
+        # Handle bytes (WKB geospatial or binary data)
         if isinstance(value, bytes):
             return value.hex()
-            
-        # Handle JSON strings that look like arrays/objects (for ARRAY/VARIANT columns)
+        
+        # Handle JSON strings that look like arrays/objects
         if isinstance(value, str):
             value_stripped = value.strip()
             if (value_stripped.startswith("{") and value_stripped.endswith("}")) or \
                (value_stripped.startswith("[") and value_stripped.endswith("]")):
                 try:
-                    # Attempt to parse JSON string to native object
-                    # This ensures Snowflake treats it as VARIANT/ARRAY, not a string literal
                     return json.loads(value)
                 except:
                     pass
@@ -290,23 +387,27 @@ class SnowflakeDestination(BaseDestination):
         records: list[CDCRecord],
         table_sync: PipelineDestinationTableSync,
     ) -> int:
-        """Async implementation of batch writing."""
-        if not self._is_initialized or self._client is None:
-            self.initialize()
+        """Async implementation of batch writing in background loop."""
+        # Note: self._client is already initialized in this loop via _initialize_async
+        if self._client is None:
+             raise DestinationException("Client not initialized", {"destination_id": self._config.id})
 
-        target_table = table_sync.table_name_target
-        landing_table = f"LANDING_{target_table.upper()}"
+        target_table = table_sync.table_name_target.upper()
+        if target_table.startswith("LANDING_"):
+            landing_table = target_table
+        else:
+            landing_table = f"LANDING_{target_table}"
 
         self._logger.info(f"Writing {len(records)} records to {landing_table}")
 
-        # Ensure channel is open
+        # Ensure channel is open and we have tokens
         if landing_table not in self._channel_tokens:
-            token = await self._client.open_channel(landing_table, "default")
-            self._channel_tokens[landing_table] = token
+            channel_resp = await self._client.open_channel(landing_table, "default")
+            self._channel_tokens[landing_table] = channel_resp.next_continuation_token or ""
 
         # Convert records to rows
         rows = [self._convert_record_to_row(record) for record in records]
-
+        
         # Insert rows
         try:
             next_token = await self._client.insert_rows(
@@ -315,6 +416,8 @@ class SnowflakeDestination(BaseDestination):
                 rows,
                 self._channel_tokens.get(landing_table),
             )
+            
+            # Update state on success
             self._channel_tokens[landing_table] = next_token
 
             self._logger.debug(f"Successfully wrote {len(rows)} rows to {landing_table}")
@@ -322,7 +425,7 @@ class SnowflakeDestination(BaseDestination):
 
         except Exception as e:
             self._logger.error(f"Failed to write to {landing_table}: {e}")
-            # Clear token to force channel re-open on retry
+            # Clear tokens to force channel re-open on retry
             self._channel_tokens.pop(landing_table, None)
             raise
 
@@ -333,13 +436,8 @@ class SnowflakeDestination(BaseDestination):
     ) -> int:
         """
         Write batch of records to Snowflake via Snowpipe Streaming.
-
-        Args:
-            records: CDC records to write
-            table_sync: Table sync configuration
-
-        Returns:
-            Number of records written
+        
+        Dispatches async work to background thread.
         """
         if not records:
             return 0
@@ -349,40 +447,19 @@ class SnowflakeDestination(BaseDestination):
             f"for table_sync: {table_sync.table_name} -> {table_sync.table_name_target}"
         )
 
-        # Run async method - handle different event loop scenarios
+        if self._loop is None or not self._loop.is_running():
+            self.initialize()
+            
+        future = asyncio.run_coroutine_threadsafe(
+            self._write_batch_async(records, table_sync), 
+            self._loop
+        )
+        
         try:
-            # Try to get running loop (Python 3.10+ style)
-            try:
-                loop = asyncio.get_running_loop()
-                # We're in an async context - need to run in thread pool
-                self._logger.debug("[Snowflake] Running in existing event loop context")
-                import concurrent.futures
-                with concurrent.futures.ThreadPoolExecutor() as executor:
-                    future = executor.submit(
-                        self._run_async_in_new_loop,
-                        self._write_batch_async(records, table_sync)
-                    )
-                    result = future.result(timeout=120)
-                    self._logger.info(f"[Snowflake] Successfully wrote {result} records")
-                    return result
-            except RuntimeError:
-                # No running loop - we can use asyncio.run() directly
-                self._logger.debug("[Snowflake] No running event loop, using asyncio.run()")
-                result = asyncio.run(self._write_batch_async(records, table_sync))
-                self._logger.info(f"[Snowflake] Successfully wrote {result} records")
-                return result
+            return future.result(timeout=120)
         except Exception as e:
             self._logger.error(f"[Snowflake] write_batch failed: {e}", exc_info=True)
             raise
-
-    def _run_async_in_new_loop(self, coro):
-        """Run a coroutine in a new event loop (for use in thread pool)."""
-        new_loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(new_loop)
-        try:
-            return new_loop.run_until_complete(coro)
-        finally:
-            new_loop.close()
 
     def create_table_if_not_exists(
         self,
@@ -411,24 +488,24 @@ class SnowflakeDestination(BaseDestination):
 
     def close(self) -> None:
         """Close client and cleanup resources."""
-        if self._client is not None:
+        # Stop background loop
+        if self._loop and self._loop.is_running():
             try:
-                # Run async close
-                try:
-                    loop = asyncio.get_event_loop()
-                    if loop.is_running():
-                        import concurrent.futures
-                        with concurrent.futures.ThreadPoolExecutor() as executor:
-                            executor.submit(asyncio.run, self._client.close()).result()
-                    else:
-                        loop.run_until_complete(self._client.close())
-                except RuntimeError:
-                    asyncio.run(self._client.close())
+                # Close client in loop
+                if self._client:
+                     asyncio.run_coroutine_threadsafe(self._client.close(), self._loop).result(timeout=5)
+                
+                # Stop loop
+                self._loop.call_soon_threadsafe(self._loop.stop)
+                if self._thread:
+                    self._thread.join(timeout=5)
             except Exception as e:
-                self._logger.warning(f"Error closing Snowflake client: {e}")
-            finally:
-                self._client = None
-
+                self._logger.warning(f"Error stopping background loop: {e}")
+                
+        self._client = None
+        self._loop = None
+        self._thread = None
         self._channel_tokens.clear()
         self._is_initialized = False
         self._logger.info(f"Snowflake destination closed: {self._config.name}")
+

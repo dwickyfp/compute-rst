@@ -72,15 +72,21 @@ class SnowpipeClient:
         self._scoped_token: Optional[str] = None
         self._channel_sequencer: int = 0
         
-        # NOTE: httpx client is created fresh per operation to avoid event loop issues
-        # when asyncio.run() is called multiple times
-
-    def _create_http_client(self) -> httpx.AsyncClient:
-        """Create a fresh HTTP client for async operations."""
-        return httpx.AsyncClient(
+        # Persistent HTTP client (like Rust's reqwest::Client)
+        # Initialized once at construction for connection stability
+        self._http: httpx.AsyncClient = httpx.AsyncClient(
             timeout=60.0,
             headers={"User-Agent": "rosetta/0.1.0"},
         )
+
+    def _get_http_client(self) -> httpx.AsyncClient:
+        """Get the persistent HTTP client, recreating if closed."""
+        if self._http.is_closed:
+            self._http = httpx.AsyncClient(
+                timeout=60.0,
+                headers={"User-Agent": "rosetta/0.1.0"},
+            )
+        return self._http
 
     async def authenticate(self) -> None:
         """
@@ -97,14 +103,14 @@ class SnowpipeClient:
             discover_url = f"{self._base_url}/v2/streaming/hostname"
             logger.info(f"[SnowpipeClient] Discovering ingest host at: {discover_url}")
             
-            async with self._create_http_client() as http:
-                response = await http.get(
-                    discover_url,
-                    headers={
-                        "Authorization": f"Bearer {jwt_token}",
-                        "X-Snowflake-Authorization-Token-Type": "KEYPAIR_JWT",
-                    },
-                )
+            http = self._get_http_client()
+            response = await http.get(
+                discover_url,
+                headers={
+                    "Authorization": f"Bearer {jwt_token}",
+                    "X-Snowflake-Authorization-Token-Type": "KEYPAIR_JWT",
+                },
+            )
             
             logger.info(f"[SnowpipeClient] Discovery response status: {response.status_code}")
             
@@ -124,7 +130,7 @@ class SnowpipeClient:
         self,
         table_name: str,
         channel_suffix: str = "default",
-    ) -> str:
+    ) -> OpenChannelResponse:
         """
         Open or create a streaming channel for a table.
 
@@ -150,15 +156,15 @@ class SnowpipeClient:
         
         logger.info(f"[SnowpipeClient] Opening channel at: {url}")
         
-        async with self._create_http_client() as http:
-            response = await http.put(
-                url,
-                headers={
-                    "Authorization": f"Bearer {self._scoped_token}",
-                    "Content-Type": "application/json",
-                },
-                json={"role": self._role},
-            )
+        http = self._get_http_client()
+        response = await http.put(
+            url,
+            headers={
+                "Authorization": f"Bearer {self._scoped_token}",
+                "Content-Type": "application/json",
+            },
+            json={"role": self._role},
+        )
         
         logger.info(f"[SnowpipeClient] Open channel response status: {response.status_code}")
         
@@ -172,6 +178,7 @@ class SnowpipeClient:
             raise Exception(f"Open channel failed: {response.text}")
         
         body = response.json()
+        
         channel_response = OpenChannelResponse(
             client_sequencer=body.get("client_sequencer"),
             next_continuation_token=body.get("next_continuation_token"),
@@ -179,7 +186,7 @@ class SnowpipeClient:
         
         self._channel_sequencer = channel_response.client_sequencer or 0
         
-        return channel_response.next_continuation_token or ""
+        return channel_response
 
     async def insert_rows(
         self,
@@ -196,7 +203,8 @@ class SnowpipeClient:
             channel_suffix: Channel suffix
             rows: List of row dictionaries to insert
             continuation_token: Token from previous operation
-
+            offset_token: Offset token for persistence tracking
+            
         Returns:
             Next continuation token
         """
@@ -210,13 +218,10 @@ class SnowpipeClient:
             f"/schemas/{self._landing_schema}/pipes/{pipe_name}/channels/{channel_name}/rows"
         )
         
-        
-        
         # Build NDJSON body
         ndjson_body = "\n".join(json.dumps(row) for row in rows) + "\n"
 
         logger.info(f"[SnowpipeClient] Insert URL: {url}")
-        logger.debug(f"[SnowpipeClient] Insert Payload Sample: {ndjson_body[:500]}")
         
         # Build request
         headers = {
@@ -229,13 +234,13 @@ class SnowpipeClient:
         if continuation_token:
             params["continuationToken"] = continuation_token
         
-        async with self._create_http_client() as http:
-            response = await http.post(
-                url,
-                headers=headers,
-                params=params if params else None,
-                content=ndjson_body,
-            )
+        http = self._get_http_client()
+        response = await http.post(
+            url,
+            headers=headers,
+            params=params if params else None,
+            content=ndjson_body,
+        )
         
         logger.info(f"[SnowpipeClient] Insert response status: {response.status_code}")
         
@@ -244,15 +249,25 @@ class SnowpipeClient:
             logger.warning("Token expired, re-authenticating...")
             await self.authenticate()
             # Re-open channel after re-auth
-            new_token = await self.open_channel(table_name, channel_suffix)
-            return await self.insert_rows(table_name, channel_suffix, rows, new_token)
+            # Note: We need to handle the response type change of open_channel here too
+            channel_resp = await self.open_channel(table_name, channel_suffix)
+            # Use the new tokens from re-open
+            return await self.insert_rows(
+                table_name, 
+                channel_suffix, 
+                rows, 
+                channel_resp.next_continuation_token,
+            )
         
         if not response.is_success:
+            # Log exact error response for debugging
+            logger.error(f"[SnowpipeClient] Insert failed details: {response.text}")
             raise Exception(f"Insert rows failed: {response.text}")
         
         res_json = response.json()
         return res_json.get("next_continuation_token", "")
 
     async def close(self) -> None:
-        """Close the client (no-op now since each operation creates its own client)."""
-        pass  # No persistent client to close
+        """Close the persistent HTTP client."""
+        if not self._http.is_closed:
+            await self._http.aclose()
